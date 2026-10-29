@@ -7,7 +7,10 @@
  *   refuses to start it at all (e.g. iPhone in Low Power Mode), a Play button appears and plays it with sound.
  * - When the film ends, or on "Skip intro" / Esc, it fades out and the main page is there.
  * - "Watch the film" on the main page plays it again, with sound (it's a tap, so browsers allow it).
- * - Pointing at a section in the directory shows that section's photo.
+ * - The film's logo as a sharp picture lies over the logo in the film; it loads with the film, fades in, and fades
+ *   to black with the film at its end.
+ * - The cup clip further down loads when it comes near the screen and plays only while it is on screen (a still
+ *   picture for people who asked for reduced motion).
  */
 (() => {
   "use strict";
@@ -16,8 +19,11 @@
   const intro = document.getElementById("intro");
   const start = document.getElementById("start");
   const SEEN_KEY = "zac:film-seen";
+  // the film's own fade to black at its end, in seconds (measured: tools/video/fix_frames.py, FADE0 and FADE1). Not
+  // counted back from video.duration: the sound runs a little longer than the picture.
+  const FILM_FADE = [66.59, 67.175];
 
-  // the photos of the directory start moving once the main page is on screen
+  // the photos of the first screen start moving once the main page is on screen
   const showMain = () => root.classList.add("start-in");
 
   if (intro) {
@@ -28,12 +34,21 @@
     const skipBtn = intro.querySelector(".intro__skip");
     const playBtn = intro.querySelector(".intro__play");
     const bar = intro.querySelector(".intro__bar span");
+    const logo = intro.querySelector(".intro__logo");
+    const logoImg = logo.querySelector("img");
     const filmBtn = document.querySelector("[data-play-film]");
     const mode = intro.dataset.mode;
     const page = () => Array.from(document.body.children).filter((el) => el !== intro && el.tagName !== "SCRIPT");
     let active = false;
     let frame = 0;
     let fadeFrame = 0;
+    let logoLevel = 1;
+
+    const setLogoLevel = (k) => {
+      if (k === logoLevel) return;
+      logoLevel = k;
+      logo.style.filter = k < 1 ? `brightness(${k.toFixed(3)})` : "";
+    };
 
     const markSeen = () => {
       try {
@@ -66,7 +81,11 @@
 
     const tick = () => {
       if (!active) return;
-      if (video.duration > 0) bar.style.transform = `scaleX(${Math.min(1, video.currentTime / video.duration)})`;
+      if (video.duration > 0) {
+        bar.style.transform = `scaleX(${Math.min(1, video.currentTime / video.duration)})`;
+        const [fadeFrom, fadeTo] = FILM_FADE;
+        setLogoLevel(Math.min(1, Math.max(0, (fadeTo - video.currentTime) / (fadeTo - fadeFrom))));
+      }
       frame = requestAnimationFrame(tick);
     };
 
@@ -75,6 +94,8 @@
       sources.forEach((s) => s.setAttribute("src", s.dataset.src));
       video.preload = "auto";
       video.load();
+      logoImg.addEventListener("load", () => logo.classList.add("is-ready"), { once: true });
+      logoImg.srcset = logoImg.dataset.srcset;
     };
 
     const waitForTap = () => {
@@ -97,6 +118,7 @@
       } catch {
         /* not loaded yet: it starts from the beginning anyway */
       }
+      setLogoLevel(1);
       video.volume = 1;
       video.muted = !withSound;
       updateSound();
@@ -197,31 +219,21 @@
     showMain();
   }
 
-  if (!start) return;
-
-  const slides = start.querySelector(".slides");
-  if (!slides || !matchMedia("(hover: hover)").matches) return;
-
-  const bySlug = new Map(Array.from(slides.querySelectorAll(".slide"), (img) => [img.dataset.slide, img]));
-  let releaseTimer;
-  const pick = (slug) => {
-    const img = bySlug.get(slug);
-    if (!img) return;
-    clearTimeout(releaseTimer);
-    slides.classList.add("is-picking");
-    bySlug.forEach((el) => el.classList.toggle("is-picked", el === img));
-  };
-  // a short delay, so moving between two names does not flash the slideshow back in
-  const release = () => {
-    releaseTimer = setTimeout(() => {
-      slides.classList.remove("is-picking");
-      bySlug.forEach((el) => el.classList.remove("is-picked"));
-    }, 350);
-  };
-  start.querySelectorAll(".directory a").forEach((link) => {
-    link.addEventListener("mouseenter", () => pick(link.dataset.slide));
-    link.addEventListener("focus", () => pick(link.dataset.slide));
-    link.addEventListener("mouseleave", release);
-    link.addEventListener("blur", release);
-  });
+  const clip = document.querySelector(".moment__video");
+  if (clip && "IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) {
+          clip.pause();
+          return;
+        }
+        if (!clip.querySelector("source[src]")) {
+          clip.querySelectorAll("source").forEach((s) => s.setAttribute("src", s.dataset.src));
+          clip.load();
+        }
+        clip.play().catch(() => {});
+      },
+      { rootMargin: "200px 0px" },
+    ).observe(clip);
+  }
 })();

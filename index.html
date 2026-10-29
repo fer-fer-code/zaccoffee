@@ -22,7 +22,7 @@
     if (show) r.classList.add("intro-on"); })(document);</script>
   <meta property="og:url" content="https://fer-fer-code.github.io/zaccoffee/">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"ZACCOFFEE","url":"https://fer-fer-code.github.io/zaccoffee/","logo":"https://fer-fer-code.github.io/zaccoffee/assets/img/logo-gold.webp","email":"info@zaccoffee.com","sameAs":["https://www.instagram.com/zaccoffee.ltd/"],"slogan":"From Our Soil to Your Soul."}</script>
-  <link rel="stylesheet" href="assets/css/main.css?v=20261029q">
+  <link rel="stylesheet" href="assets/css/main.css?v=20261030a">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="ZACCOFFEE">
   <meta property="og:title" content="ZACCOFFEE — From Our Soil to Your Soul">
@@ -31,25 +31,30 @@
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
-  <script src="assets/js/site.js?v=20261029q" defer></script>
-  <script src="assets/js/home.js?v=20261029q" defer></script>
+  <script src="assets/js/site.js?v=20261030a" defer></script>
+  <script src="assets/js/home.js?v=20261030a" defer></script>
 </head>
 <body class="home">
   <!-- The client's film (logo and music are part of it), full screen before the main page. Starts muted (browsers
        require it), "Sound on" and "Skip intro" are always visible; when it ends the main page opens.
        Nothing downloads until home.js decides to show it (the sources only have data-src). Each browser takes the
        first file it can play: phones in portrait the 1080x1920 cut (HEVC for iPhone, else H.264); others AV1 (Chrome,
-       Firefox, Edge), HEVC (Safari), H.264 720p (older browsers). -->
+       Firefox, Edge), HEVC (Safari), H.264 720p (older browsers). Over the film lies its logo as a sharp picture
+       (tools/video/film_logo.py), exactly on top of the logo in the film, so it is crisp on any screen. -->
   <div class="intro" id="intro" role="dialog" aria-modal="true" aria-label="ZACCOFFEE film" data-mode="every">
     <div class="intro__frame">
       <video class="intro__video" muted playsinline preload="none"
              aria-hidden="true" tabindex="-1" disablepictureinpicture disableremoteplayback>
-        <source data-src="assets/video/film-portrait-hevc.mp4?v=20261029q" type='video/mp4; codecs="hvc1.2.4.L123.B0, mp4a.40.2"' media="(orientation: portrait)">
-        <source data-src="assets/video/film-portrait.mp4?v=20261029q" type='video/mp4; codecs="avc1.640029, mp4a.40.2"' media="(orientation: portrait)">
-        <source data-src="assets/video/film-av1.mp4?v=20261029q" type='video/mp4; codecs="av01.0.08M.10, mp4a.40.2"'>
-        <source data-src="assets/video/film-hevc.mp4?v=20261029q" type='video/mp4; codecs="hvc1.2.4.L123.B0, mp4a.40.2"'>
-        <source data-src="assets/video/film.mp4?v=20261029q" type='video/mp4; codecs="avc1.64001f, mp4a.40.2"'>
+        <source data-src="assets/video/film-portrait-hevc.mp4?v=20261030a" type='video/mp4; codecs="hvc1.2.4.L123.B0, mp4a.40.2"' media="(orientation: portrait)">
+        <source data-src="assets/video/film-portrait.mp4?v=20261030a" type='video/mp4; codecs="avc1.640029, mp4a.40.2"' media="(orientation: portrait)">
+        <source data-src="assets/video/film-av1.mp4?v=20261030a" type='video/mp4; codecs="av01.0.08M.10, mp4a.40.2"'>
+        <source data-src="assets/video/film-hevc.mp4?v=20261030a" type='video/mp4; codecs="hvc1.2.4.L123.B0, mp4a.40.2"'>
+        <source data-src="assets/video/film.mp4?v=20261030a" type='video/mp4; codecs="avc1.64001f, mp4a.40.2"'>
       </video>
+      <div class="intro__logo" aria-hidden="true">
+        <img alt="" width="2520" height="1688" decoding="async" sizes="74vw"
+             data-srcset="assets/img/film-logo-half.webp?v=20261030a 1260w, assets/img/film-logo.webp?v=20261030a 2520w">
+      </div>
     </div>
     <button class="intro__play" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg><span>Play with sound</span></button>
     <div class="intro__ui">
@@ -95,45 +100,66 @@
     </div>
   </dialog>
   <main>
-    <section class="start split" id="start" aria-labelledby="start-title">
-      <div class="split__media slides" aria-hidden="true">
-      <img class="slide" src="assets/img/photos/basket-cherries-md.webp" srcset="assets/img/photos/basket-cherries-sm.webp 600w, assets/img/photos/basket-cherries-md.webp 1000w, assets/img/photos/basket-cherries-lg.webp 1600w" sizes="(min-width: 900px) and (min-aspect-ratio: 1/1) 55vw, 100vw" width="1000" height="1301" alt="" decoding="async" style="--n:0" loading="lazy" data-slide="about">
-      <img class="slide" src="assets/img/photos/cherries-branch-md.webp" srcset="assets/img/photos/cherries-branch-sm.webp 600w, assets/img/photos/cherries-branch-md.webp 1000w, assets/img/photos/cherries-branch-lg.webp 1600w" sizes="(min-width: 900px) and (min-aspect-ratio: 1/1) 55vw, 100vw" width="1000" height="1275" alt="" decoding="async" style="--n:1" loading="lazy" data-slide="gallery">
-      <img class="slide" src="assets/img/photos/roasted-beans-md.webp" srcset="assets/img/photos/roasted-beans-sm.webp 600w, assets/img/photos/roasted-beans-md.webp 1000w, assets/img/photos/roasted-beans-lg.webp 1600w" sizes="(min-width: 900px) and (min-aspect-ratio: 1/1) 55vw, 100vw" width="1000" height="1311" alt="" decoding="async" style="--n:2" loading="lazy" data-slide="products">
-      <img class="slide" src="assets/img/photos/sack-espresso-md.webp" srcset="assets/img/photos/sack-espresso-sm.webp 600w, assets/img/photos/sack-espresso-md.webp 1000w, assets/img/photos/sack-espresso-lg.webp 1600w" sizes="(min-width: 900px) and (min-aspect-ratio: 1/1) 55vw, 100vw" width="1000" height="1033" alt="" decoding="async" style="--n:3" loading="lazy" data-slide="services">
-      <img class="slide" src="assets/img/photos/vintage-tin-md.webp" srcset="assets/img/photos/vintage-tin-sm.webp 600w, assets/img/photos/vintage-tin-md.webp 1000w, assets/img/photos/vintage-tin-lg.webp 1600w" sizes="(min-width: 900px) and (min-aspect-ratio: 1/1) 55vw, 100vw" width="1000" height="542" alt="" decoding="async" style="--n:4" loading="lazy" data-slide="contact">
+    <!-- After the film: the brand's promise over its photos, then the sections, the first range, and two of the
+         client's own pictures (the illustrated poster and the cup clip). Layout after Bacha Coffee's home page. -->
+    <section class="hero" id="start" aria-labelledby="start-title">
+      <div class="hero__media slides" aria-hidden="true">
+      <img class="slide" src="assets/img/photos/basket-cherries-md.webp" srcset="assets/img/photos/basket-cherries-sm.webp 600w, assets/img/photos/basket-cherries-md.webp 1000w, assets/img/photos/basket-cherries-lg.webp 1600w" sizes="100vw" width="1000" height="1301" alt="" decoding="async" style="--n:0" loading="lazy">
+      <img class="slide" src="assets/img/photos/cherries-branch-md.webp" srcset="assets/img/photos/cherries-branch-sm.webp 600w, assets/img/photos/cherries-branch-md.webp 1000w, assets/img/photos/cherries-branch-lg.webp 1600w" sizes="100vw" width="1000" height="1275" alt="" decoding="async" style="--n:1" loading="lazy">
+      <img class="slide" src="assets/img/photos/roasted-beans-md.webp" srcset="assets/img/photos/roasted-beans-sm.webp 600w, assets/img/photos/roasted-beans-md.webp 1000w, assets/img/photos/roasted-beans-lg.webp 1600w" sizes="100vw" width="1000" height="1311" alt="" decoding="async" style="--n:2" loading="lazy">
+      <img class="slide" src="assets/img/photos/sack-espresso-md.webp" srcset="assets/img/photos/sack-espresso-sm.webp 600w, assets/img/photos/sack-espresso-md.webp 1000w, assets/img/photos/sack-espresso-lg.webp 1600w" sizes="100vw" width="1000" height="1033" alt="" decoding="async" style="--n:3" loading="lazy">
+      <img class="slide" src="assets/img/photos/vintage-tin-md.webp" srcset="assets/img/photos/vintage-tin-sm.webp 600w, assets/img/photos/vintage-tin-md.webp 1000w, assets/img/photos/vintage-tin-lg.webp 1600w" sizes="100vw" width="1000" height="542" alt="" decoding="async" style="--n:4" loading="lazy">
       </div>
-      <div class="start__inner">
-        <h1 class="start__brand" id="start-title" tabindex="-1">
-          <img class="start__logo" src="assets/img/logo-gold-520.webp"
-               srcset="assets/img/logo-gold-520.webp 520w, assets/img/logo-gold.webp 1041w"
-               sizes="(max-width: 560px) 72vw, 360px" width="1041" height="640" alt="ZACCOFFEE — From Our Soil to Your Soul.">
-        </h1>
-        <nav class="directory" aria-label="Sections">
-          <ul>
-          <li><a href="about/" data-slide="about"><span class="directory__name">About us</span><span class="directory__note">Coming soon</span></a></li>
-          <li><a href="gallery/" data-slide="gallery"><span class="directory__name">Gallery</span><span class="directory__note">9 photographs</span></a></li>
-          <li><a href="products/" data-slide="products"><span class="directory__name">Products</span><span class="directory__note">Coming soon</span></a></li>
-          <li><a href="services/" data-slide="services"><span class="directory__name">Services</span><span class="directory__note">Coming soon</span></a></li>
-          <li><a href="contact/" data-slide="contact"><span class="directory__name">Contact us</span><span class="directory__note">info@zaccoffee.com</span></a></li>
-          </ul>
-        </nav>
-        <button class="start__film" type="button" data-play-film hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>Watch the film</button>
-      </div>
-    </section>
-
-    <section class="story" id="story">
-      <div class="container story__grid">
-        <h2 class="display">Coffee, served the way hospitality taught us.</h2>
-        <div class="story__body">
-          <p class="lead">ZACCOFFEE is a Ugandan coffee brand, started by a founder from the hospitality world. Quality coffee and meaningful connections come first. Our first range is on its way.</p>
-          <div class="actions">
-            <a class="btn btn--gold" href="mailto:info@zaccoffee.com?subject=Launch%20updates&amp;body=Please%20let%20me%20know%20when%20ZACCOFFEE%20launches.">Get launch updates</a>
-            <a class="btn btn--line" href="mailto:info@zaccoffee.com?subject=Enquiry">Enquire</a>
-          </div>
+      <div class="hero__inner">
+        <h1 class="hero__title" id="start-title" tabindex="-1"><span class="hero__line">Two origins.</span> <span class="hero__line">One passion for coffee.</span></h1>
+        <p class="hero__lead">Discover coffee from Uganda and Indonesia, thoughtfully selected and packed by ZACCOFFEE.</p>
+        <div class="actions hero__actions">
+          <a class="btn btn--gold" href="mailto:info@zaccoffee.com?subject=Launch%20updates&amp;body=Please%20let%20me%20know%20when%20ZACCOFFEE%20launches.">Get launch updates</a>
+          <button class="btn btn--ghost" type="button" data-play-film hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>Watch the film</button>
         </div>
       </div>
     </section>
+
+    <section class="explore" aria-labelledby="explore-title">
+      <div class="container">
+        <h2 class="section-head" id="explore-title">Explore ZACCOFFEE</h2>
+        <nav aria-label="Sections">
+          <ul class="cards">
+          <li class="card"><a href="about/"><span class="card__frame"><img class="card__photo" src="assets/img/photos/basket-cherries-md.webp" srcset="assets/img/photos/basket-cherries-sm.webp 600w, assets/img/photos/basket-cherries-md.webp 1000w, assets/img/photos/basket-cherries-lg.webp 1600w" sizes="(min-width: 1100px) 240px, (min-width: 700px) 34vw, 72vw" width="1000" height="1301" alt="" decoding="async" style="object-position: 50% 50%" loading="lazy"></span><span class="card__name">About us</span><span class="card__note">Coming soon</span></a></li>
+          <li class="card"><a href="gallery/"><span class="card__frame"><img class="card__photo" src="assets/img/photos/cherries-branch-md.webp" srcset="assets/img/photos/cherries-branch-sm.webp 600w, assets/img/photos/cherries-branch-md.webp 1000w, assets/img/photos/cherries-branch-lg.webp 1600w" sizes="(min-width: 1100px) 240px, (min-width: 700px) 34vw, 72vw" width="1000" height="1275" alt="" decoding="async" style="object-position: 50% 50%" loading="lazy"></span><span class="card__name">Gallery</span><span class="card__note">12 photographs</span></a></li>
+          <li class="card"><a href="products/"><span class="card__frame"><img class="card__photo" src="assets/img/photos/roasted-beans-md.webp" srcset="assets/img/photos/roasted-beans-sm.webp 600w, assets/img/photos/roasted-beans-md.webp 1000w, assets/img/photos/roasted-beans-lg.webp 1600w" sizes="(min-width: 1100px) 240px, (min-width: 700px) 34vw, 72vw" width="1000" height="1311" alt="" decoding="async" style="object-position: 50% 50%" loading="lazy"></span><span class="card__name">Products</span><span class="card__note">Coming soon</span></a></li>
+          <li class="card"><a href="services/"><span class="card__frame"><img class="card__photo" src="assets/img/photos/sack-espresso-md.webp" srcset="assets/img/photos/sack-espresso-sm.webp 600w, assets/img/photos/sack-espresso-md.webp 1000w, assets/img/photos/sack-espresso-lg.webp 1600w" sizes="(min-width: 1100px) 240px, (min-width: 700px) 34vw, 72vw" width="1000" height="1033" alt="" decoding="async" style="object-position: 68% 50%" loading="lazy"></span><span class="card__name">Services</span><span class="card__note">Coming soon</span></a></li>
+          <li class="card"><a href="contact/"><span class="card__frame"><img class="card__photo" src="assets/img/photos/vintage-tin-md.webp" srcset="assets/img/photos/vintage-tin-sm.webp 600w, assets/img/photos/vintage-tin-md.webp 1000w, assets/img/photos/vintage-tin-lg.webp 1600w" sizes="(min-width: 1100px) 240px, (min-width: 700px) 34vw, 72vw" width="1000" height="542" alt="" decoding="async" style="object-position: 50% 45%" loading="lazy"></span><span class="card__name">Contact us</span><span class="card__note">info@zaccoffee.com</span></a></li>
+          </ul>
+        </nav>
+      </div>
+    </section>
+
+    <section class="feature" aria-labelledby="feature-title">
+      <div class="container feature__grid">
+        <div class="feature__media"><img class="feature__photo" src="assets/img/photos/modern-craft-tin-md.webp" srcset="assets/img/photos/modern-craft-tin-sm.webp 600w, assets/img/photos/modern-craft-tin-md.webp 1000w, assets/img/photos/modern-craft-tin-lg.webp 1600w" sizes="(min-width: 900px) 600px, 100vw" width="1000" height="952" alt="A ZACCOFFEE tin of modern craft coffee, three baristas on its label" decoding="async" loading="lazy"></div>
+        <div class="feature__body">
+          <p class="eyebrow">Coming soon</p>
+          <h2 class="section-title" id="feature-title">Our first range</h2>
+          <p class="lead">Coffee from Uganda and Indonesia, packed by ZACCOFFEE. Be the first to know when it&#039;s ready.</p>
+          <a class="btn btn--gold" href="mailto:info@zaccoffee.com?subject=Launch%20updates&amp;body=Please%20let%20me%20know%20when%20ZACCOFFEE%20launches.">Get launch updates</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="moments">
+      <div class="container moments__grid">
+        <div class="moment"><img class="moment__photo" src="assets/img/photos/baristas-poster-md.webp" srcset="assets/img/photos/baristas-poster-sm.webp 600w, assets/img/photos/baristas-poster-md.webp 1000w, assets/img/photos/baristas-poster-lg.webp 1600w" sizes="(min-width: 900px) 620px, 100vw" width="1000" height="971" alt="An illustrated ZACCOFFEE poster: three baristas behind the counter" decoding="async" loading="lazy"></div>
+        <div class="moment">
+          <video class="moment__video" muted loop playsinline preload="none" poster="assets/img/cup-poster.jpg?v=20261030a"
+                 width="1024" height="1248" aria-hidden="true" tabindex="-1" disablepictureinpicture disableremoteplayback>
+            <source data-src="assets/video/cup-av1.mp4?v=20261030a" type='video/mp4; codecs="av01.0.08M.10"'>
+            <source data-src="assets/video/cup-hevc.mp4?v=20261030a" type='video/mp4; codecs="hvc1.2.4.L123.B0"'>
+            <source data-src="assets/video/cup.mp4?v=20261030a" type='video/mp4; codecs="avc1.640028"'>
+          </video>
+        </div>
+      </div>
+    </div>
   </main>
 
   <footer class="site-foot">
