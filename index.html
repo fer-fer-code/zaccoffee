@@ -22,7 +22,7 @@
     if (show) r.classList.add("intro-on"); })(document);</script>
   <meta property="og:url" content="https://fer-fer-code.github.io/zaccoffee/">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"ZACCOFFEE","url":"https://fer-fer-code.github.io/zaccoffee/","logo":"https://fer-fer-code.github.io/zaccoffee/assets/img/logo-gold.webp","email":"info@zaccoffee.com","sameAs":["https://www.instagram.com/zaccoffee.ltd/"],"slogan":"From Our Soil to Your Soul."}</script>
-  <link rel="stylesheet" href="assets/css/main.css?v=20261029o">
+  <link rel="stylesheet" href="assets/css/main.css?v=20261029q">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="ZACCOFFEE">
   <meta property="og:title" content="ZACCOFFEE — From Our Soil to Your Soul">
@@ -31,20 +31,24 @@
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
-  <script src="assets/js/site.js?v=20261029o" defer></script>
-  <script src="assets/js/home.js?v=20261029o" defer></script>
+  <script src="assets/js/site.js?v=20261029q" defer></script>
+  <script src="assets/js/home.js?v=20261029q" defer></script>
 </head>
 <body class="home">
   <!-- The client's film (logo and music are part of it), full screen before the main page. Starts muted (browsers
        require it), "Sound on" and "Skip intro" are always visible; when it ends the main page opens.
-       Nothing downloads until home.js decides to show it (the sources only have data-src). -->
+       Nothing downloads until home.js decides to show it (the sources only have data-src). Each browser takes the
+       first file it can play: phones in portrait the 1080x1920 cut (HEVC for iPhone, else H.264); others AV1 (Chrome,
+       Firefox, Edge), HEVC (Safari), H.264 720p (older browsers). -->
   <div class="intro" id="intro" role="dialog" aria-modal="true" aria-label="ZACCOFFEE film" data-mode="every">
     <div class="intro__frame">
       <video class="intro__video" muted playsinline preload="none"
              aria-hidden="true" tabindex="-1" disablepictureinpicture disableremoteplayback>
-        <source data-src="assets/video/film-portrait.mp4?v=20261029o" type='video/mp4; codecs="avc1.64001F, mp4a.40.2"' media="(orientation: portrait)">
-        <source data-src="assets/video/film.webm?v=20261029o" type='video/webm; codecs="vp9, opus"'>
-        <source data-src="assets/video/film.mp4?v=20261029o" type='video/mp4; codecs="avc1.640028, mp4a.40.2"'>
+        <source data-src="assets/video/film-portrait-hevc.mp4?v=20261029q" type='video/mp4; codecs="hvc1.2.4.L123.B0, mp4a.40.2"' media="(orientation: portrait)">
+        <source data-src="assets/video/film-portrait.mp4?v=20261029q" type='video/mp4; codecs="avc1.640029, mp4a.40.2"' media="(orientation: portrait)">
+        <source data-src="assets/video/film-av1.mp4?v=20261029q" type='video/mp4; codecs="av01.0.08M.10, mp4a.40.2"'>
+        <source data-src="assets/video/film-hevc.mp4?v=20261029q" type='video/mp4; codecs="hvc1.2.4.L123.B0, mp4a.40.2"'>
+        <source data-src="assets/video/film.mp4?v=20261029q" type='video/mp4; codecs="avc1.64001f, mp4a.40.2"'>
       </video>
     </div>
     <button class="intro__play" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg><span>Play with sound</span></button>
