@@ -1,120 +1,202 @@
-/* ZACCOFFEE — home page: the film at the top, music on request, the directory and its photos.
+/* ZACCOFFEE — home page: the client's film first, then the main page with the sections.
  *
- * - The film plays on its own (muted, looping) and pauses while it is scrolled out of view.
- * - Browsers only allow sound after a tap, so music is a separate track behind the "Music" button.
- * - Visitors who asked their system for reduced motion get the still poster instead of the film.
- * - Scrolling away from the film fades the logo and lets the film sink into the page (--p on .hero).
+ * - The script in <head> decides before the first paint whether the film shows (class "intro-on"): not when the
+ *   address has a #hash (links back from inner pages), not for reduced motion, not when the admin set it to "off",
+ *   and with "first" only on someone's first visit. ?intro always shows it.
+ * - The film starts muted (browsers only allow sound after a tap): "Sound on" turns the music on. If the browser
+ *   refuses to start it at all (e.g. iPhone in Low Power Mode), a Play button appears and plays it with sound.
+ * - When the film ends, or on "Skip intro" / Esc, it fades out and the main page is there.
+ * - "Watch the film" on the main page plays it again, with sound (it's a tap, so browsers allow it).
  * - Pointing at a section in the directory shows that section's photo.
  */
 (() => {
   "use strict";
 
   const root = document.documentElement;
-  const hero = document.querySelector(".hero");
+  const intro = document.getElementById("intro");
   const start = document.getElementById("start");
-  if (!hero) return;
+  const SEEN_KEY = "zac:film-seen";
 
-  const video = hero.querySelector(".hero__video");
-  const music = hero.querySelector(".hero__music");
-  const soundBtn = hero.querySelector(".hero__sound");
-  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const canObserve = "IntersectionObserver" in window;
+  // the photos of the directory start moving once the main page is on screen
+  const showMain = () => root.classList.add("start-in");
 
-  let heroVisible = true;
-  if (reduced) {
-    video.removeAttribute("autoplay");
-    video.pause();
-  } else if (canObserve) {
-    new IntersectionObserver(
-      ([entry]) => {
-        heroVisible = entry.isIntersecting;
-        if (heroVisible) video.play().catch(() => {});
-        else video.pause();
-      },
-      { threshold: 0 },
-    ).observe(hero);
-  }
-
-  // the one scroll moment: 0 at the top, 1 when 60% of the film has scrolled away
-  if (!reduced) {
-    let queued = false;
-    const update = () => {
-      queued = false;
-      const p = Math.min(1, Math.max(0, window.scrollY / (hero.offsetHeight * 0.6)));
-      hero.style.setProperty("--p", p.toFixed(3));
-    };
-    window.addEventListener(
-      "scroll",
-      () => {
-        if (queued || !heroVisible) return;
-        queued = true;
-        requestAnimationFrame(update);
-      },
-      { passive: true },
-    );
-    update();
-  }
-
-  // Music fades in and out here rather than in the file: the track ("Amberlight" by Scott Buckley,
-  // CC BY 4.0) stays unedited. iOS ignores volume changes and simply starts and stops it.
-  if (music && soundBtn) {
-    const label = soundBtn.querySelector(".btn__label");
-    const LEVEL = 0.8;
-    let wantOn = false;
+  if (intro) {
+    const video = intro.querySelector(".intro__video");
+    const sources = Array.from(video.querySelectorAll("source"));
+    const soundBtn = intro.querySelector(".intro__sound");
+    const soundLabel = soundBtn.querySelector(".btn__label");
+    const skipBtn = intro.querySelector(".intro__skip");
+    const playBtn = intro.querySelector(".intro__play");
+    const bar = intro.querySelector(".intro__bar span");
+    const filmBtn = document.querySelector("[data-play-film]");
+    const mode = intro.dataset.mode;
+    const page = () => Array.from(document.body.children).filter((el) => el !== intro && el.tagName !== "SCRIPT");
+    let active = false;
     let frame = 0;
-    const ramp = (to, ms, done) => {
-      cancelAnimationFrame(frame);
-      const from = music.volume;
+    let fadeFrame = 0;
+
+    const markSeen = () => {
+      try {
+        localStorage.setItem(SEEN_KEY, "1");
+      } catch {
+        /* private mode: the film may show again next time */
+      }
+    };
+
+    const fadeVolume = (to, ms, done) => {
+      cancelAnimationFrame(fadeFrame);
+      const from = video.volume;
       const t0 = performance.now();
       const step = (now) => {
         const k = Math.min(1, (now - t0) / ms);
-        music.volume = from + (to - from) * k;
-        if (k < 1) frame = requestAnimationFrame(step);
+        video.volume = from + (to - from) * k;
+        if (k < 1) fadeFrame = requestAnimationFrame(step);
         else if (done) done();
       };
-      frame = requestAnimationFrame(step);
+      fadeFrame = requestAnimationFrame(step);
     };
-    const sync = () => {
-      soundBtn.classList.toggle("is-on", wantOn);
-      soundBtn.setAttribute("aria-pressed", String(wantOn));
-      label.textContent = wantOn ? "Music on" : "Music off";
+
+    const updateSound = () => {
+      const on = !video.muted;
+      soundBtn.classList.toggle("is-on", on);
+      soundBtn.setAttribute("aria-pressed", String(on));
+      soundLabel.textContent = on ? "Sound off" : "Sound on";
     };
-    soundBtn.hidden = false;
-    soundBtn.addEventListener("click", () => {
-      wantOn = !wantOn;
-      sync();
-      if (wantOn) {
-        if (music.paused) music.volume = 0;
-        music
-          .play()
-          .then(() => ramp(LEVEL, 2000))
-          .catch(() => {
-            wantOn = false;
-            sync();
-          });
-      } else {
-        ramp(0, 700, () => music.pause());
+
+    const tick = () => {
+      if (!active) return;
+      if (video.duration > 0) bar.style.transform = `scaleX(${Math.min(1, video.currentTime / video.duration)})`;
+      frame = requestAnimationFrame(tick);
+    };
+
+    const load = () => {
+      if (sources[0].getAttribute("src")) return;
+      sources.forEach((s) => s.setAttribute("src", s.dataset.src));
+      video.preload = "auto";
+      video.load();
+    };
+
+    const waitForTap = () => {
+      intro.classList.add("is-waiting");
+      playBtn.hidden = false;
+      playBtn.focus({ preventScroll: true });
+    };
+
+    async function show(withSound) {
+      active = true;
+      intro.classList.remove("is-leaving");
+      root.classList.add("intro-on");
+      page().forEach((el) => {
+        el.inert = true;
+      });
+      playBtn.hidden = true;
+      load();
+      try {
+        video.currentTime = 0;
+      } catch {
+        /* not loaded yet: it starts from the beginning anyway */
       }
+      video.volume = 1;
+      video.muted = !withSound;
+      updateSound();
+      skipBtn.focus({ preventScroll: true });
+      try {
+        await video.play();
+      } catch {
+        if (!active) return;
+        if (!video.muted) {
+          // sound refused: try muted, then wait for a tap
+          video.muted = true;
+          updateSound();
+          try {
+            await video.play();
+            return;
+          } catch {
+            /* fall through */
+          }
+        }
+        if (active) waitForTap();
+      }
+    }
+
+    function finish() {
+      if (!active) return;
+      active = false;
+      cancelAnimationFrame(frame);
+      if (mode === "first") markSeen();
+      if (!video.muted && !video.paused) fadeVolume(0, 700);
+      intro.classList.add("is-leaving");
+      page().forEach((el) => {
+        el.inert = false;
+      });
+      showMain();
+      setTimeout(() => {
+        if (active) return; // "Watch the film" was pressed during the fade
+        video.pause();
+        video.muted = true;
+        root.classList.remove("intro-on");
+        intro.classList.remove("is-leaving", "is-waiting");
+        bar.style.transform = "scaleX(0)";
+        start?.querySelector("#start-title")?.focus({ preventScroll: true });
+      }, 900);
+    }
+
+    video.addEventListener("playing", () => {
+      intro.classList.remove("is-waiting");
+      playBtn.hidden = true;
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(tick);
     });
-    sync();
+    video.addEventListener("ended", finish);
+    // the browser tries the <source> list in order; give up only when the last one fails
+    sources[sources.length - 1].addEventListener("error", finish);
+
+    skipBtn.addEventListener("click", finish);
+    soundBtn.addEventListener("click", () => {
+      if (video.muted) {
+        video.volume = 0;
+        video.muted = false;
+        if (video.paused) video.play().catch(() => {});
+        fadeVolume(1, 1200);
+      } else {
+        fadeVolume(0, 400, () => {
+          video.muted = true;
+          updateSound();
+        });
+      }
+      updateSound();
+    });
+    playBtn.addEventListener("click", () => {
+      video.muted = false;
+      video.volume = 1;
+      updateSound();
+      video.play().catch(finish);
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && active) finish();
+    });
+
+    if (filmBtn) {
+      filmBtn.hidden = false;
+      filmBtn.addEventListener("click", () => show(true));
+    }
+
+    if (root.classList.contains("intro-on")) {
+      // remove ?intro from the address, so a reload follows the normal rule again
+      const url = new URL(location.href);
+      if (url.searchParams.has("intro")) {
+        url.searchParams.delete("intro");
+        history.replaceState(null, "", url.pathname + url.search + url.hash);
+      }
+      show(false);
+    } else {
+      showMain();
+    }
+  } else {
+    showMain();
   }
 
   if (!start) return;
-
-  // the photos start moving when the directory comes into view
-  if (canObserve) {
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-        root.classList.add("start-in");
-        io.disconnect();
-      },
-      { threshold: 0.2 },
-    );
-    io.observe(start);
-  } else {
-    root.classList.add("start-in");
-  }
 
   const slides = start.querySelector(".slides");
   if (!slides || !matchMedia("(hover: hover)").matches) return;

@@ -522,167 +522,187 @@ a {
 }
 
 /* ------------------------------------------------------------------ */
-/* Hero: the film                                                      */
+/* Intro: the client's film, full screen, before the main page         */
 /* ------------------------------------------------------------------ */
 
-.hero {
-  position: relative;
-  isolation: isolate;
-  height: 100vh;
-  height: 100svh;
-  min-height: 520px;
+.intro {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  container-type: size;
   overflow: hidden;
-  background: var(--espresso) url("../img/hero-poster.jpg") center / cover no-repeat;
-  --p: 0; /* scroll progress through the hero, set by home.js */
+  background: var(--espresso);
+  color: var(--crema);
 }
 
-@media (orientation: portrait) {
-  .hero {
-    background-image: url("../img/hero-poster-portrait.jpg");
+/* set before the first paint by the script in <head>; no page scrolling while the film plays */
+.intro-on {
+  overflow: hidden;
+}
+
+.intro-on .intro {
+  display: block;
+}
+
+.intro.is-leaving {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.9s ease;
+}
+
+/* The logo is burned into the film and fills almost the whole frame, so the film is never cropped:
+   the frame is the largest 848:478 box that fits, its edges melt into the dark. */
+.intro__frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  aspect-ratio: 848 / 478;
+  transform: translate(-50%, -50%);
+  background: url("../img/film-poster.jpg") center / cover no-repeat;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 4%, #000 96%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 4%, #000 96%, transparent 100%);
+}
+
+@supports (width: 1cqh) {
+  .intro__frame {
+    width: min(100cqw, 100cqh * 848 / 478);
+  }
+
+  /* wider than the film: dark bands at the sides instead of top and bottom */
+  @container (min-aspect-ratio: 848 / 478) {
+    .intro__frame {
+      -webkit-mask-image: linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%);
+      mask-image: linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%);
+    }
   }
 }
 
-.hero__video {
-  position: absolute;
-  inset: 0;
-  z-index: -2;
+/* phones: a portrait cut (the film in the middle over a blurred copy of itself) fills the screen */
+@media (orientation: portrait) {
+  .intro__frame {
+    inset: 0;
+    top: 0;
+    left: 0;
+    width: auto;
+    aspect-ratio: auto;
+    transform: none;
+    background-image: url("../img/film-poster-portrait.jpg");
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
+
+.intro__video {
+  display: block;
   width: 100%;
   height: 100%;
   max-width: none;
   object-fit: cover;
 }
 
-/* darker behind the logo and at the top; at the bottom the film dissolves into the page */
-.hero__shade {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background:
-    radial-gradient(55% 48% at 50% 48%, rgba(18, 13, 9, 0.5) 0%, rgba(18, 13, 9, 0.18) 60%, rgba(18, 13, 9, 0) 100%),
-    linear-gradient(to bottom, rgba(18, 13, 9, 0.6) 0%, rgba(18, 13, 9, 0.05) 22%, rgba(18, 13, 9, 0.05) 58%, rgba(18, 13, 9, 0.75) 84%, var(--espresso) 100%);
-  opacity: calc(1 + var(--p) * 0.6);
+/* waiting for a tap: the still frame steps back so the Play button reads clearly */
+.intro__frame {
+  transition: filter 0.4s ease;
 }
 
-.hero__brand {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: min(84vw, 900px, 100vh);
-  margin: 0;
-  opacity: calc(1 - var(--p) * 1.25);
-  transform: translate(-50%, calc(-50% - var(--p) * 60px)) scale(calc(1 - var(--p) * 0.06));
+.intro.is-waiting .intro__frame {
+  filter: brightness(0.38);
 }
 
-.hero__brand img {
-  width: 100%;
-  height: auto;
-  filter: drop-shadow(0 8px 32px rgba(0, 0, 0, 0.55));
-  animation: hero-logo 1.8s var(--ease) 0.2s both;
-}
-
-@keyframes hero-logo {
-  from {
-    opacity: 0;
-    transform: scale(1.04);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-.hero__ui {
+.intro__ui {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: end;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
   padding:
     0
     max(var(--gutter), env(safe-area-inset-right))
     max(var(--s-5), env(safe-area-inset-bottom))
     max(var(--gutter), env(safe-area-inset-left));
-  opacity: calc(1 - var(--p) * 2.5);
 }
 
-.hero__sound {
-  justify-self: start;
-}
-
-.hero__sound .icon-on,
-.hero__sound.is-on .icon-off {
+.intro__sound .icon-on,
+.intro__sound.is-on .icon-off {
   display: none;
 }
 
-.hero__sound.is-on .icon-on {
+.intro__sound.is-on .icon-on {
   display: block;
 }
 
-.hero__scroll {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.intro__skip svg {
+  margin-right: -4px;
+}
+
+/* the browser refused to start the film on its own (e.g. iPhone in Low Power Mode) */
+.intro__play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  justify-items: center;
   gap: var(--s-3);
+  padding: 0;
+  border: 0;
+  background: none;
   color: var(--crema);
-  font-size: 13px;
-  letter-spacing: 0.04em;
-  text-decoration: none;
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.55);
+  font: 500 15px/1.2 var(--sans);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.6);
+  transform: translate(-50%, -50%);
+  cursor: pointer;
 }
 
-.hero__scroll::after {
-  content: "";
+.intro__play svg {
+  width: 88px;
+  height: 88px;
+  padding: 28px 26px 28px 30px;
+  border: 1px solid rgba(239, 228, 209, 0.55);
+  border-radius: 50%;
+  background: rgba(18, 13, 9, 0.45);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.intro__play:hover svg {
+  border-color: var(--crema);
+  background: rgba(18, 13, 9, 0.65);
+}
+
+/* a thin gold line along the bottom edge: how much of the film is left */
+.intro__bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: rgba(226, 173, 110, 0.15);
+}
+
+.intro__bar span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--cognac), var(--gold));
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+.visually-hidden {
+  position: absolute !important;
   width: 1px;
-  height: var(--s-7);
-  background: linear-gradient(to bottom, var(--gold), rgba(226, 173, 110, 0));
-  transform-origin: top;
-  animation: scroll-line 2.4s var(--ease) infinite;
-}
-
-@keyframes scroll-line {
-  0% {
-    transform: scaleY(0);
-    opacity: 1;
-  }
-  70% {
-    transform: scaleY(1);
-    opacity: 1;
-  }
-  100% {
-    transform: scaleY(1);
-    opacity: 0;
-  }
-}
-
-@media (max-width: 480px) {
-  .hero__sound {
-    width: 44px;
-    min-height: 44px;
-    padding: 0;
-  }
-
-  /* icon-only music button on phones; the label stays for screen readers */
-  .hero__sound .btn__label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-  }
-}
-
-/* short screens (landscape phones): smaller logo, no scroll cue under it */
-@media (max-height: 560px) {
-  .hero__brand {
-    width: min(70vw, 86vh);
-  }
-
-  .hero__scroll {
-    display: none;
-  }
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* ------------------------------------------------------------------ */
@@ -845,6 +865,72 @@ html:not(.js) .slide {
   }
 }
 
+/* the main page opens on the logo and the sections, as at the end of the client's film */
+.start__brand {
+  justify-self: center;
+  margin: 0;
+}
+
+.start__brand:focus {
+  outline: none;
+}
+
+.start__logo {
+  width: min(360px, 72vw);
+  height: auto;
+}
+
+.start__film {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  justify-self: center;
+  min-height: 44px;
+  padding: 0 var(--s-2);
+  border: 0;
+  background: none;
+  color: var(--husk);
+  font: 400 15px/1 var(--sans);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.start__film svg {
+  width: 30px;
+  height: 30px;
+  padding: 8px 7px 8px 9px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  color: var(--gold);
+  transition: border-color 0.2s ease;
+}
+
+.start__film:hover {
+  color: var(--crema);
+}
+
+.start__film:hover svg {
+  border-color: var(--gold);
+}
+
+/* phones: a shorter photo band, so the logo and the first sections fit on the first screen */
+@media (max-width: 899px), (max-aspect-ratio: 1/1) {
+  .home .split__media {
+    height: 32vh;
+    height: 32svh;
+    min-height: 190px;
+  }
+
+  .home .start__inner {
+    gap: var(--s-5);
+    padding-top: var(--s-4);
+  }
+
+  .home .start__logo {
+    width: min(280px, 66vw);
+  }
+}
+
 .directory ul {
   margin: 0;
   padding: 0;
@@ -902,7 +988,8 @@ html:not(.js) .slide {
 /* Inner pages                                                         */
 /* ------------------------------------------------------------------ */
 
-.page {
+.page,
+.home {
   padding-top: var(--head-h);
 }
 
@@ -1220,9 +1307,5 @@ html:not(.js) .slide {
 
   .slide:first-child {
     opacity: 1;
-  }
-
-  .hero__scroll::after {
-    animation: none;
   }
 }

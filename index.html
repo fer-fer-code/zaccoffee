@@ -14,11 +14,15 @@
   <link rel="preload" href="assets/fonts/cormorant-garamond-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/jost-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/cinzel-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="assets/img/hero-poster.jpg" as="image" media="(orientation: landscape)">
-  <link rel="preload" href="assets/img/hero-poster-portrait.jpg" as="image" media="(orientation: portrait)">
+  <script>(function (d) { var r = d.documentElement, mode = "every", show = true, seen = false;
+    try { seen = localStorage.getItem("zac:film-seen") === "1"; } catch (e) {}
+    try { if (matchMedia("(prefers-reduced-motion: reduce)").matches) show = false; } catch (e) {}
+    if (location.hash || mode === "off" || (mode === "first" && seen)) show = false;
+    if (/[?&]intro\b/.test(location.search)) show = true;
+    if (show) r.classList.add("intro-on"); })(document);</script>
   <meta property="og:url" content="https://fer-fer-code.github.io/zaccoffee/">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"ZACCOFFEE","url":"https://fer-fer-code.github.io/zaccoffee/","logo":"https://fer-fer-code.github.io/zaccoffee/assets/img/logo-gold.webp","email":"info@zaccoffee.com","sameAs":["https://www.instagram.com/zaccoffee.ltd/"],"slogan":"From Our Soil to Your Soul."}</script>
-  <link rel="stylesheet" href="assets/css/main.css?v=20261029k">
+  <link rel="stylesheet" href="assets/css/main.css?v=20261029n">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="ZACCOFFEE">
   <meta property="og:title" content="ZACCOFFEE — From Our Soil to Your Soul">
@@ -27,12 +31,34 @@
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
-  <script src="assets/js/site.js?v=20261029k" defer></script>
-  <script src="assets/js/home.js?v=20261029k" defer></script>
+  <script src="assets/js/site.js?v=20261029n" defer></script>
+  <script src="assets/js/home.js?v=20261029n" defer></script>
 </head>
 <body class="home">
-  <header class="site-head site-head--over">
-    <a class="site-head__brand" href=""><img src="assets/img/logo-mark.webp" width="192" height="192" alt="">ZACCOFFEE</a>
+  <!-- The client's film (logo and music are part of it), full screen before the main page. Starts muted (browsers
+       require it), "Sound on" and "Skip intro" are always visible; when it ends the main page opens.
+       Nothing downloads until home.js decides to show it (the sources only have data-src). -->
+  <div class="intro" id="intro" role="dialog" aria-modal="true" aria-label="ZACCOFFEE film" data-mode="every">
+    <div class="intro__frame">
+      <video class="intro__video" muted playsinline preload="none"
+             aria-hidden="true" tabindex="-1" disablepictureinpicture disableremoteplayback>
+        <source data-src="assets/video/film-portrait.mp4?v=20261029n" type='video/mp4; codecs="avc1.64001F, mp4a.40.2"' media="(orientation: portrait)">
+        <source data-src="assets/video/film.webm?v=20261029n" type='video/webm; codecs="vp9, opus"'>
+        <source data-src="assets/video/film.mp4?v=20261029n" type='video/mp4; codecs="avc1.640028, mp4a.40.2"'>
+      </video>
+    </div>
+    <button class="intro__play" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg><span>Play with sound</span></button>
+    <div class="intro__ui">
+      <button class="btn btn--ghost btn--small intro__sound" type="button" aria-pressed="false">
+        <svg class="icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.5h4l5-4v13l-5-4H3z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg><svg class="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.5h4l5-4v13l-5-4H3z"/><path d="M15.5 9a4.5 4.5 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg><span class="btn__label">Sound on</span>
+      </button>
+      <button class="btn btn--ghost btn--small intro__skip" type="button">Skip intro<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+    </div>
+    <div class="intro__bar" aria-hidden="true"><span></span></div>
+  </div>
+
+  <header class="site-head site-head--solid">
+    <a class="site-head__brand" href="#start"><img src="assets/img/logo-mark.webp" width="192" height="192" alt="">ZACCOFFEE</a>
     <nav class="site-head__nav" aria-label="Main">
       <a href="about/">About us</a>
       <a href="gallery/">Gallery</a>
@@ -46,7 +72,7 @@
 
   <dialog class="menu" id="menu" aria-label="Menu">
     <div class="menu__top">
-      <a class="site-head__brand" href=""><img src="assets/img/logo-mark.webp" width="192" height="192" alt="">ZACCOFFEE</a>
+      <a class="site-head__brand" href="#start"><img src="assets/img/logo-mark.webp" width="192" height="192" alt="">ZACCOFFEE</a>
       <button class="btn btn--ghost btn--small menu__close" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>Close</button>
     </div>
     <nav class="menu__nav" aria-label="Main">
@@ -64,31 +90,34 @@
       <a href="https://www.instagram.com/zaccoffee.ltd/" target="_blank" rel="noopener">Instagram</a>
     </div>
   </dialog>
-  <!-- The film: from the coffee tree to the cup, looping at the top of the site -->
-  <section class="hero" aria-label="ZACCOFFEE">
-    <video class="hero__video" autoplay muted loop playsinline preload="auto"
-           aria-hidden="true" tabindex="-1" disablepictureinpicture disableremoteplayback>
-      <source src="assets/video/hero-portrait.mp4?v=20261029k" type='video/mp4; codecs="avc1.64001F"' media="(orientation: portrait)">
-      <source src="assets/video/hero.webm?v=20261029k" type='video/webm; codecs="vp9"'>
-      <source src="assets/video/hero.mp4?v=20261029k" type='video/mp4; codecs="avc1.640029"'>
-    </video>
-    <div class="hero__shade" aria-hidden="true"></div>
-    <h1 class="hero__brand">
-      <img src="assets/img/logo-gold.webp"
-           srcset="assets/img/logo-gold.webp 1041w, assets/img/logo-gold-2x.webp 2082w"
-           sizes="(max-width: 1100px) 84vw, 900px" width="1041" height="640"
-           alt="ZACCOFFEE — From Our Soil to Your Soul.">
-    </h1>
-    <div class="hero__ui">
-      <button class="btn btn--ghost btn--small hero__sound" type="button" aria-pressed="false" hidden>
-        <svg class="icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.5h4l5-4v13l-5-4H3z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg><svg class="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.5h4l5-4v13l-5-4H3z"/><path d="M15.5 9a4.5 4.5 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg><span class="btn__label">Music off</span>
-      </button>
-      <a class="hero__scroll" href="#story">Discover</a>
-    </div>
-    <audio class="hero__music" src="assets/audio/music.m4a" loop preload="none"></audio>
-  </section>
-
   <main>
+    <section class="start split" id="start" aria-labelledby="start-title">
+      <div class="split__media slides" aria-hidden="true">
+      <img class="slide" src="assets/img/photos/basket-cherries-md.webp" srcset="assets/img/photos/basket-cherries-sm.webp 600w, assets/img/photos/basket-cherries-md.webp 1000w, assets/img/photos/basket-cherries-lg.webp 1600w" sizes="(min-width: 900px) and (min-aspect-ratio: 1/1) 55vw, 100vw" width="1000" height="1301" alt="" decoding="async" style="--n:0" loading="lazy" data-slide="about">
+      <img class="slide" src="assets/img/photos/cherries-branch-md.webp" srcset="assets/img/photos/cherries-branch-sm.webp 600w, assets/img/photos/cherries-branch-md.webp 1000w, assets/img/photos/cherries-branch-lg.webp 1600w" sizes="(min-width: 900px) and (min-aspect-ratio: 1/1) 55vw, 100vw" width="1000" height="1275" alt="" decoding="async" style="--n:1" loading="lazy" data-slide="gallery">
+      <img class="slide" src="assets/img/photos/roasted-beans-md.webp" srcset="assets/img/photos/roasted-beans-sm.webp 600w, assets/img/photos/roasted-beans-md.webp 1000w, assets/img/photos/roasted-beans-lg.webp 1600w" sizes="(min-width: 900px) and (min-aspect-ratio: 1/1) 55vw, 100vw" width="1000" height="1311" alt="" decoding="async" style="--n:2" loading="lazy" data-slide="products">
+      <img class="slide" src="assets/img/photos/sack-espresso-md.webp" srcset="assets/img/photos/sack-espresso-sm.webp 600w, assets/img/photos/sack-espresso-md.webp 1000w, assets/img/photos/sack-espresso-lg.webp 1600w" sizes="(min-width: 900px) and (min-aspect-ratio: 1/1) 55vw, 100vw" width="1000" height="1033" alt="" decoding="async" style="--n:3" loading="lazy" data-slide="services">
+      <img class="slide" src="assets/img/photos/vintage-tin-md.webp" srcset="assets/img/photos/vintage-tin-sm.webp 600w, assets/img/photos/vintage-tin-md.webp 1000w, assets/img/photos/vintage-tin-lg.webp 1600w" sizes="(min-width: 900px) and (min-aspect-ratio: 1/1) 55vw, 100vw" width="1000" height="542" alt="" decoding="async" style="--n:4" loading="lazy" data-slide="contact">
+      </div>
+      <div class="start__inner">
+        <h1 class="start__brand" id="start-title" tabindex="-1">
+          <img class="start__logo" src="assets/img/logo-gold-520.webp"
+               srcset="assets/img/logo-gold-520.webp 520w, assets/img/logo-gold.webp 1041w"
+               sizes="(max-width: 560px) 72vw, 360px" width="1041" height="640" alt="ZACCOFFEE — From Our Soil to Your Soul.">
+        </h1>
+        <nav class="directory" aria-label="Sections">
+          <ul>
+          <li><a href="about/" data-slide="about"><span class="directory__name">About us</span><span class="directory__note">Coming soon</span></a></li>
+          <li><a href="gallery/" data-slide="gallery"><span class="directory__name">Gallery</span><span class="directory__note">9 photographs</span></a></li>
+          <li><a href="products/" data-slide="products"><span class="directory__name">Products</span><span class="directory__note">Coming soon</span></a></li>
+          <li><a href="services/" data-slide="services"><span class="directory__name">Services</span><span class="directory__note">Coming soon</span></a></li>
+          <li><a href="contact/" data-slide="contact"><span class="directory__name">Contact us</span><span class="directory__note">info@zaccoffee.com</span></a></li>
+          </ul>
+        </nav>
+        <button class="start__film" type="button" data-play-film hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>Watch the film</button>
+      </div>
+    </section>
+
     <section class="story" id="story">
       <div class="container story__grid">
         <h2 class="display">Coffee, served the way hospitality taught us.</h2>
@@ -101,34 +130,12 @@
         </div>
       </div>
     </section>
-
-    <section class="start split" id="start" aria-labelledby="start-title">
-      <div class="split__media slides" aria-hidden="true">
-      <img class="slide" src="assets/img/photos/basket-cherries-md.webp" srcset="assets/img/photos/basket-cherries-sm.webp 600w, assets/img/photos/basket-cherries-md.webp 1000w, assets/img/photos/basket-cherries-lg.webp 1600w" sizes="(min-width: 900px) and (min-aspect-ratio: 1/1) 55vw, 100vw" width="1000" height="1301" alt="" decoding="async" style="--n:0" loading="lazy" data-slide="about">
-      <img class="slide" src="assets/img/photos/cherries-branch-md.webp" srcset="assets/img/photos/cherries-branch-sm.webp 600w, assets/img/photos/cherries-branch-md.webp 1000w, assets/img/photos/cherries-branch-lg.webp 1600w" sizes="(min-width: 900px) and (min-aspect-ratio: 1/1) 55vw, 100vw" width="1000" height="1275" alt="" decoding="async" style="--n:1" loading="lazy" data-slide="gallery">
-      <img class="slide" src="assets/img/photos/roasted-beans-md.webp" srcset="assets/img/photos/roasted-beans-sm.webp 600w, assets/img/photos/roasted-beans-md.webp 1000w, assets/img/photos/roasted-beans-lg.webp 1600w" sizes="(min-width: 900px) and (min-aspect-ratio: 1/1) 55vw, 100vw" width="1000" height="1311" alt="" decoding="async" style="--n:2" loading="lazy" data-slide="products">
-      <img class="slide" src="assets/img/photos/sack-espresso-md.webp" srcset="assets/img/photos/sack-espresso-sm.webp 600w, assets/img/photos/sack-espresso-md.webp 1000w, assets/img/photos/sack-espresso-lg.webp 1600w" sizes="(min-width: 900px) and (min-aspect-ratio: 1/1) 55vw, 100vw" width="1000" height="1033" alt="" decoding="async" style="--n:3" loading="lazy" data-slide="services">
-      <img class="slide" src="assets/img/photos/vintage-tin-md.webp" srcset="assets/img/photos/vintage-tin-sm.webp 600w, assets/img/photos/vintage-tin-md.webp 1000w, assets/img/photos/vintage-tin-lg.webp 1600w" sizes="(min-width: 900px) and (min-aspect-ratio: 1/1) 55vw, 100vw" width="1000" height="542" alt="" decoding="async" style="--n:4" loading="lazy" data-slide="contact">
-      </div>
-      <div class="start__inner">
-        <h2 class="slogan" id="start-title">From Our Soil to Your Soul.</h2>
-        <nav class="directory" aria-label="Sections">
-          <ul>
-          <li><a href="about/" data-slide="about"><span class="directory__name">About us</span><span class="directory__note">Coming soon</span></a></li>
-          <li><a href="gallery/" data-slide="gallery"><span class="directory__name">Gallery</span><span class="directory__note">9 photographs</span></a></li>
-          <li><a href="products/" data-slide="products"><span class="directory__name">Products</span><span class="directory__note">Coming soon</span></a></li>
-          <li><a href="services/" data-slide="services"><span class="directory__name">Services</span><span class="directory__note">Coming soon</span></a></li>
-          <li><a href="contact/" data-slide="contact"><span class="directory__name">Contact us</span><span class="directory__note">info@zaccoffee.com</span></a></li>
-          </ul>
-        </nav>
-      </div>
-    </section>
   </main>
 
   <footer class="site-foot">
     <div class="container site-foot__top">
       <div>
-        <a class="site-foot__logo" href=""><img src="assets/img/logo-gold-520.webp" width="520" height="320" alt="ZACCOFFEE — home"></a>
+        <a class="site-foot__logo" href="#start"><img src="assets/img/logo-gold-520.webp" width="520" height="320" alt="ZACCOFFEE — home"></a>
         <p class="slogan">From Our Soil to Your Soul.</p>
       </div>
       <nav aria-labelledby="foot-explore">
@@ -152,7 +159,7 @@
     </div>
     <div class="container site-foot__bottom">
       <span>© 2026 ZACCOFFEE</span>
-      <span>Music: “Amberlight” by <a href="https://www.scottbuckley.com.au" target="_blank" rel="noopener">Scott Buckley</a>, released under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener license">CC BY 4.0</a></span>
+      <span>A Ugandan coffee brand</span>
     </div>
   </footer>
 </body>
