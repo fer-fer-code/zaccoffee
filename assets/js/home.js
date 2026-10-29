@@ -48,8 +48,9 @@
       const from = video.volume;
       const t0 = performance.now();
       const step = (now) => {
-        const k = Math.min(1, (now - t0) / ms);
-        video.volume = from + (to - from) * k;
+        // a frame's timestamp can be a little earlier than t0, and volume outside 0..1 throws
+        const k = Math.min(1, Math.max(0, (now - t0) / ms));
+        video.volume = Math.min(1, Math.max(0, from + (to - from) * k));
         if (k < 1) fadeFrame = requestAnimationFrame(step);
         else if (done) done();
       };
