@@ -1764,6 +1764,23 @@ html:not(.js) .slide {
   text-underline-offset: 3px;
 }
 
+/* phones: the whole footer on one centre line, from the logo down to the copyright */
+@media (max-width: 639px) {
+  .site-foot__top,
+  .site-foot__bottom {
+    text-align: center;
+  }
+
+  .site-foot ul a {
+    display: inline-flex;
+  }
+
+  .site-foot__bottom {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /* Not found                                                           */
 /* ------------------------------------------------------------------ */
