@@ -1410,6 +1410,15 @@ html:not(.js) .slide {
   line-height: 1.5;
 }
 
+.form__note a {
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 3px;
+}
+
+.form__note a:hover {
+  color: var(--gold);
+}
+
 .form__status {
   margin: 0;
   font-size: 15px;
@@ -1767,13 +1776,19 @@ html:not(.js) .slide {
   text-underline-offset: 3px;
 }
 
-/* who made the site: at the right end of the row, as quiet as the copyright, gold under the pointer */
+/* Privacy next to the copyright; who made the site at the right end of the row; both as quiet as the copyright,
+   gold under the pointer */
+.site-foot__bottom .site-foot__legal,
 .site-foot__bottom .site-foot__maker {
-  margin-left: auto;
   text-decoration: none;
 }
 
+.site-foot__bottom .site-foot__maker {
+  margin-left: auto;
+}
+
 @media (max-width: 899px) {
+  .site-foot__bottom .site-foot__legal,
   .site-foot__bottom .site-foot__maker {
     display: inline-flex;
     align-items: center;
@@ -1792,14 +1807,101 @@ html:not(.js) .slide {
     display: inline-flex;
   }
 
+  /* one line under the other, an even 44 px apart */
   .site-foot__bottom {
     flex-direction: column;
     align-items: center;
+    gap: 0;
+  }
+
+  .site-foot__bottom > * {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
   }
 
   .site-foot__bottom .site-foot__maker {
     margin-left: 0;
   }
+}
+
+/* ------------------------------------------------------------------ */
+/* Privacy: one column at a comfortable reading width                  */
+/* ------------------------------------------------------------------ */
+
+.legal {
+  padding: clamp(var(--s-7), 7vw, var(--s-9)) 0 var(--s-9);
+}
+
+.legal__body {
+  max-width: 44rem;
+  margin-inline: auto;
+}
+
+.legal .legal__updated {
+  margin: var(--s-5) 0 var(--s-7);
+  color: var(--husk);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.legal h2 {
+  margin: var(--s-7) 0 var(--s-3);
+  color: var(--gold);
+  font-family: var(--serif);
+  font-size: clamp(24px, 0.6vw + 20px, 28px);
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.legal p,
+.legal li {
+  color: var(--crema);
+  font-size: clamp(16px, 0.2vw + 15.5px, 17px);
+  line-height: 1.75;
+  text-wrap: pretty;
+}
+
+.legal p {
+  margin: 0 0 var(--s-4);
+}
+
+/* the opening paragraph: what the page is about, a little larger */
+.legal__updated + p {
+  font-family: var(--serif);
+  font-size: clamp(20px, 0.5vw + 17px, 23px);
+  line-height: 1.5;
+}
+
+.legal ul {
+  display: grid;
+  gap: var(--s-3);
+  margin: 0 0 var(--s-4);
+  padding: 0;
+  list-style: none;
+}
+
+.legal li {
+  position: relative;
+  padding-left: var(--s-5);
+}
+
+/* a small gold dot, centred on the first line */
+.legal li::before {
+  content: "";
+  position: absolute;
+  top: calc(0.875em - 3px);
+  left: 2px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+
+.legal a {
+  color: var(--gold);
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 3px;
 }
 
 /* ------------------------------------------------------------------ */
