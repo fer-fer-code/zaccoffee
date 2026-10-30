@@ -566,7 +566,8 @@ a {
   width: 100%;
   aspect-ratio: 848 / 478;
   transform: translate(-50%, -50%);
-  background: url("../img/film-poster.jpg") center / 100% 100% no-repeat;
+  /* ?film=3: the posters keep their names from film to film, and hosts cache pictures for a month */
+  background: url("../img/film-poster.jpg?film=3") center / 100% 100% no-repeat;
   -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 4%, #000 96%, transparent 100%);
   mask-image: linear-gradient(to bottom, transparent 0, #000 4%, #000 96%, transparent 100%);
 }
@@ -594,7 +595,7 @@ a {
     width: auto;
     aspect-ratio: auto;
     transform: none;
-    background-image: url("../img/film-poster-portrait.jpg");
+    background-image: url("../img/film-poster-portrait.jpg?film=3");
     background-size: cover;
     -webkit-mask-image: none;
     mask-image: none;
@@ -602,7 +603,7 @@ a {
 }
 
 /* landscape: the frame has the film's shape, so the picture fills it exactly (the files are 16:9, 0.2% wider than
-   848:478 — invisible) and the logo layer below lines up with it to the pixel */
+   848:478 — invisible) */
 .intro__video {
   display: block;
   width: 100%;
@@ -614,48 +615,6 @@ a {
 @media (orientation: portrait) {
   .intro__video {
     object-fit: cover;
-  }
-}
-
-/* The film's logo as a sharp picture (tools/video/film_logo.py), laid exactly over the logo in the film: the film is
-   848x478 from WhatsApp, so its logo is soft on big and high-density screens. The box is the film's own picture:
-   the whole frame in landscape; in portrait, the band in the middle of the 1080x1920 cut (1020x576, centred; the
-   cut covers the screen). It fades in once loaded, and out with the film's own fade to black (home.js). */
-.intro__logo {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transition: opacity 0.6s ease;
-  pointer-events: none;
-}
-
-.intro__logo.is-ready {
-  opacity: 1;
-}
-
-.intro__logo img {
-  position: absolute;
-  left: 13.443%;
-  top: 5.439%;
-  width: 74.292%;
-  height: 88.285%;
-  max-width: none;
-}
-
-@media (orientation: portrait) {
-  .intro__logo {
-    inset: auto;
-    top: 50%;
-    left: 50%;
-    width: max(100cqw * 1020 / 1080, 100cqh * 1020 / 1920);
-    height: max(100cqw * 576 / 1080, 100cqh * 576 / 1920);
-    transform: translate(-50%, -50%);
-  }
-
-  @supports not (width: 1cqh) {
-    .intro__logo {
-      display: none;
-    }
   }
 }
 

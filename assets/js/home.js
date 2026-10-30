@@ -3,12 +3,10 @@
  * - The script in <head> decides before the first paint whether the film shows (class "intro-on"): not when the
  *   address has a #hash (links back from inner pages), not for reduced motion, not when the admin set it to "off",
  *   and with "first" only on someone's first visit. ?intro always shows it.
- * - The film starts muted (browsers only allow sound after a tap): "Sound on" turns the music on. If the browser
+ * - The film starts muted (browsers only allow sound after a tap): "Sound on" turns the sound on. If the browser
  *   refuses to start it at all (e.g. iPhone in Low Power Mode), a Play button appears and plays it with sound.
  * - When the film ends, or on "Skip intro" / Esc, it fades out and the main page is there.
  * - "Watch the film" on the main page plays it again, with sound (it's a tap, so browsers allow it).
- * - The film's logo as a sharp picture lies over the logo in the film; it loads with the film, fades in, and fades
- *   to black with the film at its end.
  * - The cup clip further down loads when it comes near the screen and plays only while it is on screen (a still
  *   picture for people who asked for reduced motion).
  */
@@ -19,9 +17,6 @@
   const intro = document.getElementById("intro");
   const start = document.getElementById("start");
   const SEEN_KEY = "zac:film-seen";
-  // the film's own fade to black at its end, in seconds (measured: tools/video/fix_frames.py, FADE0 and FADE1). Not
-  // counted back from video.duration: the sound runs a little longer than the picture.
-  const FILM_FADE = [66.59, 67.175];
 
   // the photos of the first screen start moving once the main page is on screen
   const showMain = () => root.classList.add("start-in");
@@ -34,21 +29,12 @@
     const skipBtn = intro.querySelector(".intro__skip");
     const playBtn = intro.querySelector(".intro__play");
     const bar = intro.querySelector(".intro__bar span");
-    const logo = intro.querySelector(".intro__logo");
-    const logoImg = logo.querySelector("img");
     const filmBtn = document.querySelector("[data-play-film]");
     const mode = intro.dataset.mode;
     const page = () => Array.from(document.body.children).filter((el) => el !== intro && el.tagName !== "SCRIPT");
     let active = false;
     let frame = 0;
     let fadeFrame = 0;
-    let logoLevel = 1;
-
-    const setLogoLevel = (k) => {
-      if (k === logoLevel) return;
-      logoLevel = k;
-      logo.style.filter = k < 1 ? `brightness(${k.toFixed(3)})` : "";
-    };
 
     const markSeen = () => {
       try {
@@ -83,8 +69,6 @@
       if (!active) return;
       if (video.duration > 0) {
         bar.style.transform = `scaleX(${Math.min(1, video.currentTime / video.duration)})`;
-        const [fadeFrom, fadeTo] = FILM_FADE;
-        setLogoLevel(Math.min(1, Math.max(0, (fadeTo - video.currentTime) / (fadeTo - fadeFrom))));
       }
       frame = requestAnimationFrame(tick);
     };
@@ -94,8 +78,6 @@
       sources.forEach((s) => s.setAttribute("src", s.dataset.src));
       video.preload = "auto";
       video.load();
-      logoImg.addEventListener("load", () => logo.classList.add("is-ready"), { once: true });
-      logoImg.srcset = logoImg.dataset.srcset;
     };
 
     const waitForTap = () => {
@@ -118,7 +100,6 @@
       } catch {
         /* not loaded yet: it starts from the beginning anyway */
       }
-      setLogoLevel(1);
       video.volume = 1;
       video.muted = !withSound;
       updateSound();
