@@ -1136,7 +1136,7 @@ html:not(.js) .slide {
   padding-top: var(--head-h);
 }
 
-.soon {
+.page-body {
   display: grid;
   align-content: center;
   justify-items: start;
@@ -1145,8 +1145,57 @@ html:not(.js) .slide {
 }
 
 @media (min-width: 900px) and (min-aspect-ratio: 1/1) {
-  .soon {
+  .page-body {
     padding: var(--s-8) max(var(--gutter), 6vw) var(--s-8) var(--s-6);
+  }
+}
+
+/* a page with its own text (Our Story) opens with a larger paragraph in the serif of the headings */
+.opening {
+  max-width: 22em;
+  margin: var(--s-2) 0 0;
+  color: var(--crema);
+  font-family: var(--serif);
+  font-size: clamp(24px, 0.8vw + 19px, 31px);
+  font-weight: 500;
+  line-height: 1.35;
+  text-wrap: pretty;
+}
+
+/* the slogan as the last line of the text: its signature */
+.page-body .slogan {
+  margin-top: var(--s-2);
+}
+
+/* the vision, set apart in a raised panel like the signature block on the home page */
+.vision {
+  display: grid;
+  gap: var(--s-4);
+  max-width: 34em;
+  margin-top: var(--s-5);
+  padding: var(--s-6);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--roast);
+}
+
+.vision .eyebrow {
+  color: var(--gold);
+}
+
+.vision__text {
+  margin: 0;
+  color: var(--crema);
+  font-family: var(--serif);
+  font-size: clamp(22px, 0.5vw + 18px, 26px);
+  font-weight: 500;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+@media (max-width: 560px) {
+  .vision {
+    padding: var(--s-5);
   }
 }
 
