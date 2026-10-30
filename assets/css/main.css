@@ -1767,6 +1767,20 @@ html:not(.js) .slide {
   text-underline-offset: 3px;
 }
 
+/* who made the site: at the right end of the row, as quiet as the copyright, gold under the pointer */
+.site-foot__bottom .site-foot__maker {
+  margin-left: auto;
+  text-decoration: none;
+}
+
+@media (max-width: 899px) {
+  .site-foot__bottom .site-foot__maker {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
+
 /* phones: the whole footer on one centre line, from the logo down to the copyright */
 @media (max-width: 639px) {
   .site-foot__top,
@@ -1781,6 +1795,10 @@ html:not(.js) .slide {
   .site-foot__bottom {
     flex-direction: column;
     align-items: center;
+  }
+
+  .site-foot__bottom .site-foot__maker {
+    margin-left: 0;
   }
 }
 
