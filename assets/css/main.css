@@ -566,8 +566,8 @@ a {
   width: 100%;
   aspect-ratio: 848 / 478;
   transform: translate(-50%, -50%);
-  /* ?film=3: the posters keep their names from film to film, and hosts cache pictures for a month */
-  background: url("../img/film-poster.jpg?film=3") center / 100% 100% no-repeat;
+  /* ?film=4: the posters keep their names from film to film, and hosts cache pictures for a month */
+  background: url("../img/film-poster.jpg?film=4") center / 100% 100% no-repeat;
   -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 4%, #000 96%, transparent 100%);
   mask-image: linear-gradient(to bottom, transparent 0, #000 4%, #000 96%, transparent 100%);
 }
@@ -595,7 +595,7 @@ a {
     width: auto;
     aspect-ratio: auto;
     transform: none;
-    background-image: url("../img/film-poster-portrait.jpg?film=3");
+    background-image: url("../img/film-poster-portrait.jpg?film=4");
     background-size: cover;
     -webkit-mask-image: none;
     mask-image: none;
