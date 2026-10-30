@@ -77,4 +77,37 @@
       }
     });
   });
+
+  // Below the first screen, sections and photos rise gently into place as they scroll into view, once; the ones
+  // that come in together follow each other by a beat. The section cards come in as one row (on phones the row
+  // swipes sideways, so cards off to the right would otherwise wait). What is on screen when the page opens is
+  // never hidden, and nothing moves for people who turn motion off (or without this script).
+  const rising = document.querySelectorAll(
+    ".section-head, .cards > li, .feature, .moment, .gallery > li, .founder, .principles, .comments, .contact-list > div",
+  );
+  if (rising.length && "IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const groups = new Map();              // what is watched -> what rises when it comes into view
+    const watch = new IntersectionObserver(
+      (entries) => {
+        entries
+          .filter((entry) => entry.isIntersecting)
+          .flatMap((entry) => (watch.unobserve(entry.target), groups.get(entry.target)))
+          .forEach((el, k) => {
+            el.style.transitionDelay = `${Math.min(k, 5) * 80}ms`;
+            el.classList.add("is-in");
+          });
+      },
+      { rootMargin: "0px 0px -6% 0px" },
+    );
+    rising.forEach((el) => {
+      if (el.getBoundingClientRect().top < innerHeight) return;
+      const trigger = el.closest(".cards") || el;
+      if (!groups.has(trigger)) {
+        groups.set(trigger, []);
+        watch.observe(trigger);
+      }
+      groups.get(trigger).push(el);
+      el.classList.add("rise");
+    });
+  }
 })();
