@@ -521,6 +521,12 @@ a {
   margin-bottom: var(--s-2);
 }
 
+.menu__social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2) var(--s-5);
+}
+
 /* ------------------------------------------------------------------ */
 /* Intro: the client's film, full screen, before the main page         */
 /* ------------------------------------------------------------------ */
@@ -1167,23 +1173,31 @@ html:not(.js) .slide {
   margin-top: var(--s-2);
 }
 
-/* the vision, set apart in a raised panel like the signature block on the home page */
-.vision {
+/* the vision, values and promise, set apart in one raised panel like the signature block on the home page */
+.principles {
   display: grid;
-  gap: var(--s-4);
   max-width: 34em;
   margin-top: var(--s-5);
-  padding: var(--s-6);
   border: 1px solid var(--line);
   border-radius: 3px;
   background: var(--roast);
 }
 
-.vision .eyebrow {
+.principle {
+  display: grid;
+  gap: var(--s-3);
+  padding: var(--s-6);
+}
+
+.principle + .principle {
+  border-top: 1px solid var(--line);
+}
+
+.principle .eyebrow {
   color: var(--gold);
 }
 
-.vision__text {
+.principle__text {
   margin: 0;
   color: var(--crema);
   font-family: var(--serif);
@@ -1194,9 +1208,53 @@ html:not(.js) .slide {
 }
 
 @media (max-width: 560px) {
-  .vision {
+  .principle {
     padding: var(--s-5);
   }
+}
+
+/* the Contact page: each way to reach the brand on a line of its own, its name small above it */
+.contact-list {
+  display: grid;
+  width: 100%;
+  max-width: 34em;
+  margin: var(--s-2) 0 var(--s-3);
+}
+
+.contact-list > div {
+  display: grid;
+  gap: var(--s-2);
+  padding: var(--s-5) 0;
+  border-top: 1px solid var(--line);
+}
+
+.contact-list > div:last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+.contact-list dd {
+  margin: 0;
+  color: var(--crema);
+  font-family: var(--serif);
+  font-size: clamp(24px, 0.6vw + 19px, 30px);
+  font-weight: 500;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.contact-list a {
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.contact-list a:hover {
+  color: var(--gold);
+}
+
+.contact-list__social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2) var(--s-6);
 }
 
 .status {
@@ -1366,7 +1424,7 @@ html:not(.js) .slide {
 
 @media (min-width: 900px) {
   .site-foot__top {
-    grid-template-columns: 1.5fr 1fr 1fr;
+    grid-template-columns: 1.5fr repeat(3, 1fr);
     align-items: start;
   }
 }
