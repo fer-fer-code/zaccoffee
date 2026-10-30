@@ -1314,6 +1314,203 @@ html:not(.js) .slide {
 }
 
 /* ------------------------------------------------------------------ */
+/* Forms: "Get launch updates" and "Leave a comment"                   */
+/* ------------------------------------------------------------------ */
+
+.form {
+  display: grid;
+  justify-items: start;
+  gap: var(--s-4);
+  width: 100%;
+  max-width: 30em;
+}
+
+.form__field {
+  display: grid;
+  gap: var(--s-2);
+  width: 100%;
+}
+
+.form__label {
+  color: var(--crema);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.form__optional {
+  margin-left: var(--s-1);
+  color: var(--husk);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.form input,
+.form textarea {
+  width: 100%;
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--crema);
+  font: inherit;
+  font-size: 16px;               /* 16 px: phones don't zoom in on focus */
+  line-height: 1.5;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.form textarea {
+  min-height: 7.5em;
+  resize: vertical;
+}
+
+.form input:hover,
+.form textarea:hover {
+  border-color: var(--gold);
+}
+
+.form input:focus-visible,
+.form textarea:focus-visible {
+  border-color: var(--gold);
+  outline: 2px solid var(--gold);
+  outline-offset: 1px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* the field people can't see: bots fill it in, and the send is refused */
+.form__trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.form__note {
+  margin: 0;
+  color: var(--husk);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.form__status {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.form__status:empty {
+  display: none;
+}
+
+.form__status.is-ok {
+  color: var(--gold);
+}
+
+.form__status.is-error {
+  color: #f0a58a;
+}
+
+.form.is-sending button[type="submit"] {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* the sign-up window */
+.signup-dialog {
+  width: min(30rem, 100% - 2 * var(--gutter));
+  max-height: calc(100dvh - 2 * var(--gutter));
+  padding: var(--s-7) var(--s-6) var(--s-6);
+  overflow: auto;
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  background:
+    radial-gradient(90% 60% at 80% 0%, rgba(176, 110, 60, 0.18), transparent 70%),
+    var(--roast);
+  color: var(--crema);
+}
+
+.signup-dialog::backdrop {
+  background: rgba(10, 7, 5, 0.72);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.signup-dialog__close {
+  position: absolute;
+  top: var(--s-3);
+  right: var(--s-3);
+}
+
+.signup-dialog__title {
+  margin: 0 0 var(--s-2);
+  color: var(--gold);
+  font-family: var(--serif);
+  font-size: clamp(30px, 1vw + 24px, 38px);
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.signup-dialog__lead {
+  margin: 0 0 var(--s-5);
+  color: var(--crema);
+  line-height: 1.6;
+}
+
+@media (max-width: 560px) {
+  .signup-dialog {
+    padding: var(--s-7) var(--s-5) var(--s-5);
+  }
+}
+
+/* comments under Our Story */
+.comments {
+  display: grid;
+  gap: var(--s-5);
+  width: 100%;
+  max-width: 34em;
+  margin-top: var(--s-7);
+  padding-top: var(--s-7);
+  border-top: 1px solid var(--line);
+}
+
+.comments__title {
+  margin: 0;
+  color: var(--gold);
+  font-family: var(--serif);
+  font-size: clamp(28px, 0.8vw + 22px, 34px);
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.comments__list {
+  display: grid;
+  gap: var(--s-5);
+  margin: 0 0 var(--s-4);
+  padding: 0;
+  list-style: none;
+}
+
+.comments__who {
+  margin: 0 0 var(--s-1);
+  color: var(--crema);
+  font-weight: 500;
+}
+
+.comments__who span {
+  margin-left: var(--s-2);
+  color: var(--husk);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.comments__text {
+  margin: 0;
+  color: var(--crema);
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+/* ------------------------------------------------------------------ */
 /* Gallery                                                             */
 /* ------------------------------------------------------------------ */
 
