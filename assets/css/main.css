@@ -293,12 +293,17 @@ a {
   gap: var(--s-3);
 }
 
+/* on phones every button runs the full width of the text column: one straight edge on both sides, on any phone */
 @media (max-width: 560px) {
   .actions {
     flex-direction: column;
     align-items: stretch;
     width: 100%;
-    max-width: 360px;
+  }
+
+  .feature__body .btn,
+  .form button[type="submit"] {
+    width: 100%;
   }
 }
 
@@ -340,6 +345,7 @@ a {
 .site-head__brand {
   display: inline-flex;
   align-items: center;
+  min-height: 44px;
   gap: var(--s-3);
   margin-right: auto;
   color: var(--gold);
@@ -506,7 +512,7 @@ a {
 
 .menu__foot {
   display: grid;
-  gap: var(--s-3);
+  gap: var(--s-1);                /* the links are 44 px tall themselves */
   padding: var(--s-5) var(--gutter) max(var(--s-6), env(safe-area-inset-bottom));
   color: var(--husk);
   font-size: 15px;
@@ -514,6 +520,12 @@ a {
 
 .menu__foot a {
   text-decoration: none;
+}
+
+.menu__foot a:not(.btn) {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 
 .menu__foot .btn {
@@ -1260,8 +1272,8 @@ html:not(.js) .slide {
 
 .contact-list > div {
   display: grid;
-  gap: var(--s-2);
-  padding: var(--s-5) 0;
+  gap: var(--s-1);
+  padding: var(--s-4) 0;
   border-top: 1px solid var(--line);
 }
 
@@ -1280,6 +1292,9 @@ html:not(.js) .slide {
 }
 
 .contact-list a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;              /* an easy tap */
   text-decoration: none;
   transition: color 0.2s ease;
 }
@@ -1656,6 +1671,19 @@ html:not(.js) .slide {
   padding: var(--s-9) 0 var(--s-8);
 }
 
+/* tablets: the logo across the top, the three link groups side by side under it */
+@media (min-width: 640px) and (max-width: 899px) {
+  .site-foot__top {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--s-7) var(--s-5);
+    align-items: start;
+  }
+
+  .site-foot__top > :first-child {
+    grid-column: 1 / -1;
+  }
+}
+
 @media (min-width: 900px) {
   .site-foot__top {
     grid-template-columns: 1.5fr repeat(3, 1fr);
@@ -1699,6 +1727,20 @@ html:not(.js) .slide {
 
 .site-foot a:hover {
   color: var(--gold);
+}
+
+/* fingers: on phones and tablets every footer link is at least 44 px tall */
+@media (max-width: 899px) {
+  .site-foot ul {
+    gap: 0;
+  }
+
+  .site-foot ul a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0;
+  }
 }
 
 .site-foot__bottom {
