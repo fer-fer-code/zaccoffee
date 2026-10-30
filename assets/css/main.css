@@ -1172,6 +1172,84 @@ html:not(.js) .slide {
   }
 }
 
+/* Meet the Founder: his photo beside his words in a raised panel (stacked when the panel is narrow) */
+.founder {
+  container-type: inline-size;
+  width: 100%;
+  max-width: 34em;
+  margin-top: var(--s-5);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--roast);
+}
+
+.founder__inner {
+  display: grid;
+}
+
+
+/* square, his face and the cup in view */
+.founder__photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: cover;
+  object-position: 50% 28%;
+}
+
+@container (min-width: 460px) {
+  .founder__inner {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  }
+
+  /* beside the words the photo runs the panel's full height */
+  .founder__photo {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+}
+
+.founder__body {
+  display: grid;
+  gap: var(--s-3);
+  padding: var(--s-6) var(--s-5);
+}
+
+.founder .eyebrow {
+  color: var(--gold);
+}
+
+.founder__quote {
+  margin: 0;
+  color: var(--crema);
+  font-family: var(--serif);
+  font-size: clamp(21px, 0.5vw + 17px, 25px);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.founder__quote p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.founder__quote p::before {
+  content: "\201C";
+}
+
+.founder__quote p::after {
+  content: "\201D";
+}
+
+.founder__name {
+  margin: 0;
+  color: var(--husk);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+}
+
 /* the Contact page: each way to reach the brand on a line of its own, its name small above it */
 .contact-list {
   display: grid;
