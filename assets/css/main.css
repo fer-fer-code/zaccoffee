@@ -540,10 +540,12 @@ a {
 }
 
 /* ------------------------------------------------------------------ */
-/* Intro: the client's film, full screen, before the main page         */
+/* Intro: the client's logo video and its menu, before the main page  */
 /* ------------------------------------------------------------------ */
 
 .intro {
+  /* the video's light grey at its sides, top to bottom (tools/build_intro_menu.sh prints the stops) */
+  --intro-light: linear-gradient(#ececec 3%, #f6f6f6 30%, #fafafa 55%, #fefefe 97%);
   display: none;
   position: fixed;
   inset: 0;
@@ -554,7 +556,20 @@ a {
   color: var(--crema);
 }
 
-/* set before the first paint by the script in <head>; no page scrolling while the film plays */
+.intro[data-shape="tall"] {
+  --intro-light: linear-gradient(#f9f9f9 3%, #fdfdfd 30%, #fefefe 97%);
+}
+
+/* the video fades in from espresso to its light grey, and the screen around it with it (home.js sets --light) */
+.intro::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--intro-light);
+  opacity: var(--light, 0);
+}
+
+/* set before the first paint by the script in <head>; no page scrolling while the intro shows */
 .intro-on {
   overflow: hidden;
 }
@@ -569,53 +584,49 @@ a {
   transition: opacity 0.9s ease;
 }
 
-/* The logo is burned into the film and fills almost the whole frame, so the film is never cropped:
-   the frame is the largest 848:478 box that fits, its edges melt into the dark. */
+/* The picture is never cropped (the logo and the menu are its point): the largest box of its shape that fits —
+   16:9, or 9:16 for the portrait cut phones get — its edges melting into the same grey around it. */
 .intro__frame {
   position: absolute;
   top: 50%;
   left: 50%;
   width: 100%;
-  aspect-ratio: 848 / 478;
+  aspect-ratio: 16 / 9;
   transform: translate(-50%, -50%);
-  /* ?film=4: the posters keep their names from film to film, and hosts cache pictures for a month */
-  background: url("../img/film-poster.jpg?film=4") center / 100% 100% no-repeat;
   -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 4%, #000 96%, transparent 100%);
   mask-image: linear-gradient(to bottom, transparent 0, #000 4%, #000 96%, transparent 100%);
 }
 
+.intro[data-shape="tall"] .intro__frame {
+  aspect-ratio: 9 / 16;
+}
+
 @supports (width: 1cqh) {
   .intro__frame {
-    width: min(100cqw, 100cqh * 848 / 478);
+    width: min(100cqw, 100cqh * 16 / 9);
   }
 
-  /* wider than the film: dark bands at the sides instead of top and bottom */
-  @container (min-aspect-ratio: 848 / 478) {
+  .intro[data-shape="tall"] .intro__frame {
+    width: min(100cqw, 100cqh * 9 / 16);
+  }
+
+  /* wider than the picture: grey at the sides instead of top and bottom */
+  @container (min-aspect-ratio: 16 / 9) {
     .intro__frame {
+      -webkit-mask-image: linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%);
+      mask-image: linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%);
+    }
+  }
+
+  @container (min-aspect-ratio: 9 / 16) {
+    .intro[data-shape="tall"] .intro__frame {
       -webkit-mask-image: linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%);
       mask-image: linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%);
     }
   }
 }
 
-/* phones: a portrait cut (the film in the middle over a blurred copy of itself) fills the screen */
-@media (orientation: portrait) {
-  .intro__frame {
-    inset: 0;
-    top: 0;
-    left: 0;
-    width: auto;
-    aspect-ratio: auto;
-    transform: none;
-    background-image: url("../img/film-poster-portrait.jpg?film=4");
-    background-size: cover;
-    -webkit-mask-image: none;
-    mask-image: none;
-  }
-}
-
-/* landscape: the frame has the film's shape, so the picture fills it exactly (the files are 16:9, 0.2% wider than
-   848:478 — invisible) */
+/* the frame has the file's shape, so the picture fills it exactly */
 .intro__video {
   display: block;
   width: 100%;
@@ -624,19 +635,60 @@ a {
   object-fit: fill;
 }
 
-@media (orientation: portrait) {
-  .intro__video {
-    object-fit: cover;
-  }
+/* the browser won't play the video (e.g. iPhone in Low Power Mode): its last frame, the menu, as a picture.
+   ?v=1: hosts cache pictures for a month, so a new cut needs a new number here */
+.intro.is-still .intro__frame {
+  background: url("../img/intro-end.jpg?v=1") center / 100% 100% no-repeat;
 }
 
-/* waiting for a tap: the still frame steps back so the Play button reads clearly */
-.intro__frame {
-  transition: filter 0.4s ease;
+.intro.is-still[data-shape="tall"] .intro__frame {
+  background-image: url("../img/intro-end-portrait.jpg?v=1");
 }
 
-.intro.is-waiting .intro__frame {
-  filter: brightness(0.38);
+.intro.is-still .intro__video {
+  visibility: hidden;
+}
+
+/* The logo and the menu lines in the picture are links laid over them: home.js moves them with the video
+   (positions in parts of the picture, from tools/build_intro_menu.sh). */
+.intro__logo,
+.intro__link {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.intro__logo {
+  border-radius: 50%;
+}
+
+/* pointing at a menu line, or reaching it with the keyboard: a cognac line draws under it */
+.intro__link::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 7%;
+  height: clamp(2px, 5%, 4px);
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, var(--cognac) 22%, var(--cognac) 78%, transparent);
+  transform: scaleX(0);
+  transition: transform 0.35s var(--ease);
+}
+
+.intro__link:hover::after,
+.intro__link:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.intro__logo:focus-visible,
+.intro__link:focus-visible {
+  outline: 2px solid var(--cognac);
+  outline-offset: 2px;
 }
 
 .intro__ui {
@@ -655,6 +707,22 @@ a {
     max(var(--gutter), env(safe-area-inset-left));
 }
 
+/* the buttons: light over the espresso at the start, dark once the video's grey is around them */
+.intro.is-light .btn--ghost {
+  border-color: rgba(18, 13, 9, 0.28);
+  background: rgba(255, 255, 255, 0.45);
+  color: var(--espresso);
+}
+
+.intro.is-light .btn--ghost:hover {
+  border-color: var(--espresso);
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.intro.is-light :focus-visible {
+  outline-color: var(--cognac);
+}
+
 .intro__sound .icon-on,
 .intro__sound.is-on .icon-off {
   display: none;
@@ -664,46 +732,16 @@ a {
   display: block;
 }
 
+/* the video has stopped on its menu: no sound left to turn on */
+.intro.is-done .intro__sound {
+  visibility: hidden;
+}
+
 .intro__skip svg {
   margin-right: -4px;
 }
 
-/* the browser refused to start the film on its own (e.g. iPhone in Low Power Mode) */
-.intro__play {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  display: grid;
-  justify-items: center;
-  gap: var(--s-3);
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--crema);
-  font: 500 15px/1.2 var(--sans);
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.6);
-  transform: translate(-50%, -50%);
-  cursor: pointer;
-}
-
-.intro__play svg {
-  width: 88px;
-  height: 88px;
-  padding: 28px 26px 28px 30px;
-  border: 1px solid rgba(239, 228, 209, 0.55);
-  border-radius: 50%;
-  background: rgba(18, 13, 9, 0.45);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-  transition: border-color 0.2s ease, background-color 0.2s ease;
-}
-
-.intro__play:hover svg {
-  border-color: var(--crema);
-  background: rgba(18, 13, 9, 0.65);
-}
-
-/* a thin gold line along the bottom edge: how much of the film is left */
+/* a thin gold line along the bottom edge: how much of the video is left */
 .intro__bar {
   position: absolute;
   left: 0;
@@ -711,6 +749,11 @@ a {
   bottom: 0;
   height: 2px;
   background: rgba(226, 173, 110, 0.15);
+  transition: opacity 0.6s ease;
+}
+
+.intro.is-done .intro__bar {
+  opacity: 0;
 }
 
 .intro__bar span {

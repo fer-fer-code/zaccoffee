@@ -1,12 +1,16 @@
-/* ZACCOFFEE — home page: the client's film first, then the main page with the sections.
+/* ZACCOFFEE — home page: the client's logo video and its menu first, then the main page with the sections.
  *
- * - The script in <head> decides before the first paint whether the film shows (class "intro-on"): not when the
+ * - The script in <head> decides before the first paint whether the intro shows (class "intro-on"): not when the
  *   address has a #hash (links back from inner pages), not for reduced motion, not when the admin set it to "off",
  *   and with "first" only on someone's first visit. ?intro always shows it.
- * - The film starts muted (browsers only allow sound after a tap): "Sound on" turns the sound on. If the browser
- *   refuses to start it at all (e.g. iPhone in Low Power Mode), a Play button appears and plays it with sound.
- * - When the film ends, or on "Skip intro" / Esc, it fades out and the main page is there.
- * - "Watch the film" on the main page plays it again, with sound (it's a tap, so browsers allow it).
+ * - The video starts muted (browsers only allow sound after a tap): "Sound on" turns the sound on.
+ * - Its menu lines are links laid over the picture. #intro-track says where each one is, frame by frame, in parts of
+ *   the picture (tools/build_intro_menu.sh); they move with the video and appear once their line has risen into
+ *   view. The video stops on the menu, and "Skip intro" becomes "Enter site".
+ * - The screen around the picture fades from espresso to the video's grey together with the video's own fade-in.
+ * - If the browser won't start the video (e.g. iPhone in Low Power Mode) or can't play it, its last frame shows as
+ *   a picture, with the same links.
+ * - "Skip intro" / "Enter site", the logo or Esc: the intro fades out and the main page is there.
  * - The cup clip further down loads when it comes near the screen and plays only while it is on screen (a still
  *   picture for people who asked for reduced motion).
  */
@@ -16,7 +20,7 @@
   const root = document.documentElement;
   const intro = document.getElementById("intro");
   const start = document.getElementById("start");
-  const SEEN_KEY = "zac:film-seen";
+  const SEEN_KEY = "zac:film-seen"; // named in the days of the film; kept, so people who saw that aren't asked again
 
   // the photos of the first screen start moving once the main page is on screen
   const showMain = () => root.classList.add("start-in");
@@ -27,21 +31,67 @@
     const soundBtn = intro.querySelector(".intro__sound");
     const soundLabel = soundBtn.querySelector(".btn__label");
     const skipBtn = intro.querySelector(".intro__skip");
-    const playBtn = intro.querySelector(".intro__play");
+    const skipLabel = skipBtn.querySelector(".btn__label");
     const bar = intro.querySelector(".intro__bar span");
-    const filmBtn = document.querySelector("[data-play-film]");
+    const spots = Array.from(intro.querySelectorAll("[data-track]"));
     const mode = intro.dataset.mode;
     const page = () => Array.from(document.body.children).filter((el) => el !== intro && el.tagName !== "SCRIPT");
+    let track = null;
+    try {
+      track = JSON.parse(document.getElementById("intro-track").textContent);
+    } catch {
+      /* no track: the video plays without its links */
+    }
+    const fps = track?.fps ?? 24;
+    const lastFrame = (track?.frames ?? 1) - 1;
     let active = false;
     let frame = 0;
     let fadeFrame = 0;
+
+    // the picture's shape: the screen's until the video has loaded, then the file the browser picked
+    const setShape = (tall) => {
+      intro.dataset.shape = tall ? "tall" : "wide";
+    };
+    setShape(matchMedia("(orientation: portrait)").matches);
+    video.addEventListener("loadedmetadata", () => setShape(video.videoHeight > video.videoWidth));
 
     const markSeen = () => {
       try {
         localStorage.setItem(SEEN_KEY, "1");
       } catch {
-        /* private mode: the film may show again next time */
+        /* private mode: the intro may show again next time */
       }
+    };
+
+    // where a link is at frame f: keyframes [frame, left, top, width, height], in straight lines between them
+    const at = (keys, f) => {
+      if (!keys?.length || f < keys[0][0]) return null;
+      let k = 0;
+      while (k < keys.length - 1 && keys[k + 1][0] <= f) k += 1;
+      const a = keys[k];
+      const b = keys[k + 1];
+      if (!b) return a.slice(1);
+      const t = (f - a[0]) / (b[0] - a[0]);
+      return a.slice(1).map((v, j) => v + (b[j + 1] - v) * t);
+    };
+
+    // frame f of the video: the links over it, and the grey around it
+    const paint = (f) => {
+      const view = track?.[intro.dataset.shape === "tall" ? "portrait" : "landscape"];
+      spots.forEach((el) => {
+        const r = view ? at(view[el.dataset.track], f) : null;
+        if (el.hidden !== !r) el.hidden = !r;
+        if (!r) return;
+        el.style.left = `${r[0] * 100}%`;
+        el.style.top = `${r[1] * 100}%`;
+        el.style.width = `${r[2] * 100}%`;
+        el.style.height = `${r[3] * 100}%`;
+      });
+      // the same curve as the video's fade-in (tools/video/intro_menu.py)
+      const k = Math.min(1, Math.max(0, (f + 1) / (track?.fade ?? 1)));
+      const light = k * k * (3 - 2 * k);
+      intro.style.setProperty("--light", light.toFixed(3));
+      intro.classList.toggle("is-light", light > 0.5);
     };
 
     const fadeVolume = (to, ms, done) => {
@@ -67,6 +117,7 @@
 
     const tick = () => {
       if (!active) return;
+      paint(video.currentTime * fps);
       if (video.duration > 0) {
         bar.style.transform = `scaleX(${Math.min(1, video.currentTime / video.duration)})`;
       }
@@ -80,46 +131,40 @@
       video.load();
     };
 
-    const waitForTap = () => {
-      intro.classList.add("is-waiting");
-      playBtn.hidden = false;
-      playBtn.focus({ preventScroll: true });
+    // the video has stopped on its menu: the links stay where the lines are
+    const toEnd = () => {
+      if (!active) return;
+      cancelAnimationFrame(frame);
+      paint(lastFrame);
+      bar.style.transform = "scaleX(1)";
+      intro.classList.add("is-done");
+      skipLabel.textContent = "Enter site";
+      if (document.activeElement === soundBtn) skipBtn.focus({ preventScroll: true });
+      if (mode === "first") markSeen();
     };
 
-    async function show(withSound) {
+    // the browser won't play it: the last frame as a picture, with the same links
+    const showStill = () => {
+      if (!active) return;
+      video.pause();
+      intro.classList.add("is-still");
+      toEnd();
+    };
+
+    async function show() {
       active = true;
-      intro.classList.remove("is-leaving");
       root.classList.add("intro-on");
       page().forEach((el) => {
         el.inert = true;
       });
-      playBtn.hidden = true;
       load();
-      try {
-        video.currentTime = 0;
-      } catch {
-        /* not loaded yet: it starts from the beginning anyway */
-      }
-      video.volume = 1;
-      video.muted = !withSound;
+      video.muted = true;
       updateSound();
       skipBtn.focus({ preventScroll: true });
       try {
         await video.play();
       } catch {
-        if (!active) return;
-        if (!video.muted) {
-          // sound refused: try muted, then wait for a tap
-          video.muted = true;
-          updateSound();
-          try {
-            await video.play();
-            return;
-          } catch {
-            /* fall through */
-          }
-        }
-        if (active) waitForTap();
+        showStill();
       }
     }
 
@@ -135,32 +180,33 @@
       });
       showMain();
       setTimeout(() => {
-        if (active) return; // "Watch the film" was pressed during the fade
         video.pause();
         video.muted = true;
         root.classList.remove("intro-on");
-        intro.classList.remove("is-leaving", "is-waiting");
-        bar.style.transform = "scaleX(0)";
         start?.querySelector("#start-title")?.focus({ preventScroll: true });
       }, 900);
     }
 
     video.addEventListener("playing", () => {
-      intro.classList.remove("is-waiting");
-      playBtn.hidden = true;
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(tick);
     });
-    video.addEventListener("ended", finish);
+    video.addEventListener("ended", toEnd);
     // the browser tries the <source> list in order; give up only when the last one fails
-    sources[sources.length - 1].addEventListener("error", finish);
+    sources[sources.length - 1].addEventListener("error", showStill);
 
     skipBtn.addEventListener("click", finish);
+    intro.querySelector(".intro__logo").addEventListener("click", finish);
+    intro.querySelectorAll(".intro__link").forEach((link) => {
+      link.addEventListener("click", () => {
+        if (mode === "first") markSeen();
+      });
+    });
     soundBtn.addEventListener("click", () => {
       if (video.muted) {
         video.volume = 0;
         video.muted = false;
-        if (video.paused) video.play().catch(() => {});
+        if (video.paused && !video.ended) video.play().catch(() => {});
         fadeVolume(1, 1200);
       } else {
         fadeVolume(0, 400, () => {
@@ -170,20 +216,14 @@
       }
       updateSound();
     });
-    playBtn.addEventListener("click", () => {
-      video.muted = false;
-      video.volume = 1;
-      updateSound();
-      video.play().catch(finish);
-    });
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && active) finish();
     });
-
-    if (filmBtn) {
-      filmBtn.hidden = false;
-      filmBtn.addEventListener("click", () => show(true));
-    }
+    // back from a section the menu led to: the page as it was left; a video stopped halfway goes on
+    window.addEventListener("pageshow", (event) => {
+      if (!event.persisted || !active || !video.paused || video.ended || intro.classList.contains("is-still")) return;
+      video.play().catch(showStill);
+    });
 
     if (root.classList.contains("intro-on")) {
       // remove ?intro from the address, so a reload follows the normal rule again
@@ -192,7 +232,7 @@
         url.searchParams.delete("intro");
         history.replaceState(null, "", url.pathname + url.search + url.hash);
       }
-      show(false);
+      show();
     } else {
       showMain();
     }
