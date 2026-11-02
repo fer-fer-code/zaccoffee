@@ -1,7 +1,8 @@
 /* ZACCOFFEE — home page: the client's logo video and its menu first, then the main page with the sections.
  *
- * - First the client's film plays (from the coffee tree to the cup), then the logo video with its menu. "Skip
- *   intro" during the film goes straight to the menu; the sound setting carries over.
+ * - First the client's film plays (from the coffee tree to the cup), then straight away the start screen: the
+ *   menu video's last frame as a picture (with the film's logo), its links over it. "Skip intro" during the film
+ *   goes to it too. Without the film (or if the browser can't play it either way) the same screen shows.
  * - The script in <head> decides before the first paint whether the intro shows (class "intro-on"): not when the
  *   address has a #hash (links back from inner pages), not for reduced motion, not when the admin set it to "off",
  *   and with "first" only on someone's first visit. ?intro always shows it.
@@ -140,23 +141,17 @@
       v.load();
     };
 
-    // the film has ended or was skipped: the logo video, with the sound as it was
-    const toMenu = async () => {
+    // the film has ended or was skipped: the start screen, the menu at once (the client asked for it as a page,
+    // not the menu video rising)
+    const toMenu = () => {
       if (!active || cur === video) return;
       cancelAnimationFrame(frame);
-      film.pause();
-      video.muted = film.muted;
-      video.volume = film.volume;
+      if (!film.muted) fadeVolume(0, 600, () => film.pause());
+      else film.pause();
       cur = video;
       intro.classList.remove("is-film");
-      setShape(video.videoHeight ? video.videoHeight > video.videoWidth : matchMedia("(orientation: portrait)").matches);
-      bar.style.transform = "scaleX(0)";
-      load(video);
-      try {
-        await video.play();
-      } catch {
-        showStill();
-      }
+      setShape(matchMedia("(orientation: portrait)").matches);
+      showStill();
     };
 
     // the video has stopped on its menu: the links stay where the lines are
@@ -242,7 +237,6 @@
       if (v !== cur) return;
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(tick);
-      if (v === film) load(video); // the logo video ready by the time the film ends
     }));
     video.addEventListener("ended", toEnd);
     film?.addEventListener("ended", toMenu);

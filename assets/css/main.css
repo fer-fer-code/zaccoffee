@@ -650,15 +650,27 @@ a {
 /* the browser won't play the video (e.g. iPhone in Low Power Mode): its last frame, the menu, as a picture.
    ?v=1: hosts cache pictures for a month, so a new cut needs a new number here */
 .intro.is-still .intro__frame {
-  background: url("../img/intro-end.jpg?v=1") center / 100% 100% no-repeat;
+  background: url("../img/intro-end.jpg?v=2") center / 100% 100% no-repeat;
 }
 
 .intro.is-still[data-shape="tall"] .intro__frame {
-  background-image: url("../img/intro-end-portrait.jpg?v=1");
+  background-image: url("../img/intro-end-portrait.jpg?v=2");
 }
 
 .intro.is-still .intro__video {
   visibility: hidden;
+}
+
+/* after the film: the start screen comes up out of the film's dark end */
+.intro.is-still .intro__frame,
+.intro.is-still::before {
+  animation: intro-in 0.8s ease-out;
+}
+
+@keyframes intro-in {
+  from {
+    opacity: 0;
+  }
 }
 
 /* The logo and the menu lines in the picture are links laid over them: home.js moves them with the video
