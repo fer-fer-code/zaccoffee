@@ -47,6 +47,7 @@
     let active = false;
     let frame = 0;
     let fadeFrame = 0;
+    let leaving = 0;
 
     // the picture's shape: the screen's until the video has loaded, then the file the browser picked
     const setShape = (tall) => {
@@ -152,7 +153,17 @@
     };
 
     async function show() {
+      if (active) return;
       active = true;
+      clearTimeout(leaving);
+      // again after it was closed: from the start
+      if (intro.classList.contains("is-leaving")) {
+        intro.classList.remove("is-leaving", "is-done", "is-still");
+        skipLabel.textContent = "Skip intro";
+        video.currentTime = 0;
+        paint(0);
+        bar.style.transform = "scaleX(0)";
+      }
       root.classList.add("intro-on");
       page().forEach((el) => {
         el.inert = true;
@@ -179,7 +190,7 @@
         el.inert = false;
       });
       showMain();
-      setTimeout(() => {
+      leaving = setTimeout(() => {
         video.pause();
         video.muted = true;
         root.classList.remove("intro-on");
@@ -195,6 +206,13 @@
     // the browser tries the <source> list in order; give up only when the last one fails
     sources[sources.length - 1].addEventListener("error", showStill);
 
+    // "Watch intro" on the main page: the intro again, without reloading (the link itself is ?intro)
+    document.querySelectorAll("[data-intro-replay]").forEach((link) => {
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        show();
+      });
+    });
     skipBtn.addEventListener("click", finish);
     intro.querySelector(".intro__logo").addEventListener("click", finish);
     intro.querySelectorAll(".intro__link").forEach((link) => {
