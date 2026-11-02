@@ -1,5 +1,7 @@
 /* ZACCOFFEE — home page: the client's logo video and its menu first, then the main page with the sections.
  *
+ * - First the client's film plays (from the coffee tree to the cup), then the logo video with its menu. "Skip
+ *   intro" during the film goes straight to the menu; the sound setting carries over.
  * - The script in <head> decides before the first paint whether the intro shows (class "intro-on"): not when the
  *   address has a #hash (links back from inner pages), not for reduced motion, not when the admin set it to "off",
  *   and with "first" only on someone's first visit. ?intro always shows it.
@@ -28,6 +30,7 @@
   if (intro) {
     const video = intro.querySelector(".intro__video");
     const sources = Array.from(video.querySelectorAll("source"));
+    const film = intro.querySelector(".intro__film");
     const soundBtn = intro.querySelector(".intro__sound");
     const soundLabel = soundBtn.querySelector(".btn__label");
     const skipBtn = intro.querySelector(".intro__skip");
@@ -48,13 +51,16 @@
     let frame = 0;
     let fadeFrame = 0;
     let leaving = 0;
+    let cur = video; // the film while it plays, then the logo video
 
     // the picture's shape: the screen's until the video has loaded, then the file the browser picked
     const setShape = (tall) => {
       intro.dataset.shape = tall ? "tall" : "wide";
     };
     setShape(matchMedia("(orientation: portrait)").matches);
-    video.addEventListener("loadedmetadata", () => setShape(video.videoHeight > video.videoWidth));
+    [film, video].forEach((v) => v?.addEventListener("loadedmetadata", () => {
+      if (v === cur) setShape(v.videoHeight > v.videoWidth);
+    }));
 
     const markSeen = () => {
       try {
@@ -97,12 +103,13 @@
 
     const fadeVolume = (to, ms, done) => {
       cancelAnimationFrame(fadeFrame);
-      const from = video.volume;
+      const v = cur;
+      const from = v.volume;
       const t0 = performance.now();
       const step = (now) => {
         // a frame's timestamp can be a little earlier than t0, and volume outside 0..1 throws
         const k = Math.min(1, Math.max(0, (now - t0) / ms));
-        video.volume = Math.min(1, Math.max(0, from + (to - from) * k));
+        v.volume = Math.min(1, Math.max(0, from + (to - from) * k));
         if (k < 1) fadeFrame = requestAnimationFrame(step);
         else if (done) done();
       };
@@ -110,7 +117,7 @@
     };
 
     const updateSound = () => {
-      const on = !video.muted;
+      const on = !cur.muted;
       soundBtn.classList.toggle("is-on", on);
       soundBtn.setAttribute("aria-pressed", String(on));
       soundLabel.textContent = on ? "Sound off" : "Sound on";
@@ -118,18 +125,38 @@
 
     const tick = () => {
       if (!active) return;
-      paint(video.currentTime * fps);
-      if (video.duration > 0) {
-        bar.style.transform = `scaleX(${Math.min(1, video.currentTime / video.duration)})`;
+      if (cur === video) paint(video.currentTime * fps);
+      if (cur.duration > 0) {
+        bar.style.transform = `scaleX(${Math.min(1, cur.currentTime / cur.duration)})`;
       }
       frame = requestAnimationFrame(tick);
     };
 
-    const load = () => {
-      if (sources[0].getAttribute("src")) return;
-      sources.forEach((s) => s.setAttribute("src", s.dataset.src));
-      video.preload = "auto";
-      video.load();
+    const load = (v) => {
+      const list = Array.from(v.querySelectorAll("source"));
+      if (list[0].getAttribute("src")) return;
+      list.forEach((s) => s.setAttribute("src", s.dataset.src));
+      v.preload = "auto";
+      v.load();
+    };
+
+    // the film has ended or was skipped: the logo video, with the sound as it was
+    const toMenu = async () => {
+      if (!active || cur === video) return;
+      cancelAnimationFrame(frame);
+      film.pause();
+      video.muted = film.muted;
+      video.volume = film.volume;
+      cur = video;
+      intro.classList.remove("is-film");
+      setShape(video.videoHeight ? video.videoHeight > video.videoWidth : matchMedia("(orientation: portrait)").matches);
+      bar.style.transform = "scaleX(0)";
+      load(video);
+      try {
+        await video.play();
+      } catch {
+        showStill();
+      }
     };
 
     // the video has stopped on its menu: the links stay where the lines are
@@ -147,6 +174,10 @@
     // the browser won't play it: the last frame as a picture, with the same links
     const showStill = () => {
       if (!active) return;
+      if (cur === film) {
+        toMenu();
+        return;
+      }
       video.pause();
       intro.classList.add("is-still");
       toEnd();
@@ -160,7 +191,9 @@
       if (intro.classList.contains("is-leaving")) {
         intro.classList.remove("is-leaving", "is-done", "is-still");
         skipLabel.textContent = "Skip intro";
+        video.pause();
         video.currentTime = 0;
+        if (film) film.currentTime = 0;
         paint(0);
         bar.style.transform = "scaleX(0)";
       }
@@ -168,12 +201,16 @@
       page().forEach((el) => {
         el.inert = true;
       });
-      load();
-      video.muted = true;
+      cur = film ?? video;
+      intro.classList.toggle("is-film", cur === film);
+      load(cur);
+      [film, video].forEach((v) => {
+        if (v) v.muted = true;
+      });
       updateSound();
       skipBtn.focus({ preventScroll: true });
       try {
-        await video.play();
+        await cur.play();
       } catch {
         showStill();
       }
@@ -184,27 +221,42 @@
       active = false;
       cancelAnimationFrame(frame);
       if (mode === "first") markSeen();
-      if (!video.muted && !video.paused) fadeVolume(0, 700);
+      if (!cur.muted && !cur.paused) fadeVolume(0, 700);
       intro.classList.add("is-leaving");
       page().forEach((el) => {
         el.inert = false;
       });
       showMain();
       leaving = setTimeout(() => {
-        video.pause();
-        video.muted = true;
+        [film, video].forEach((v) => {
+          if (!v) return;
+          v.pause();
+          v.muted = true;
+        });
         root.classList.remove("intro-on");
         start?.querySelector("#start-title")?.focus({ preventScroll: true });
       }, 900);
     }
 
-    video.addEventListener("playing", () => {
+    [film, video].forEach((v) => v?.addEventListener("playing", () => {
+      if (v !== cur) return;
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(tick);
-    });
+      if (v === film) load(video); // the logo video ready by the time the film ends
+    }));
     video.addEventListener("ended", toEnd);
-    // the browser tries the <source> list in order; give up only when the last one fails
-    sources[sources.length - 1].addEventListener("error", showStill);
+    film?.addEventListener("ended", toMenu);
+    // the browser tries the <source> list in order; give up only when the last one fails. Before load() sets
+    // their src the browser also reports each source as failed: those don't count
+    const onLastFails = (v, then) => {
+      const list = v.querySelectorAll("source");
+      const last = list[list.length - 1];
+      last.addEventListener("error", () => {
+        if (last.getAttribute("src")) then();
+      });
+    };
+    onLastFails(video, showStill);
+    if (film) onLastFails(film, toMenu);
 
     // "Watch intro" on the main page: the intro again, without reloading (the link itself is ?intro)
     document.querySelectorAll("[data-intro-replay]").forEach((link) => {
@@ -213,7 +265,7 @@
         show();
       });
     });
-    skipBtn.addEventListener("click", finish);
+    skipBtn.addEventListener("click", () => (cur === film ? toMenu() : finish()));
     intro.querySelector(".intro__logo").addEventListener("click", finish);
     intro.querySelectorAll(".intro__link").forEach((link) => {
       link.addEventListener("click", () => {
@@ -221,14 +273,15 @@
       });
     });
     soundBtn.addEventListener("click", () => {
-      if (video.muted) {
-        video.volume = 0;
-        video.muted = false;
-        if (video.paused && !video.ended) video.play().catch(() => {});
+      const v = cur;
+      if (v.muted) {
+        v.volume = 0;
+        v.muted = false;
+        if (v.paused && !v.ended) v.play().catch(() => {});
         fadeVolume(1, 1200);
       } else {
         fadeVolume(0, 400, () => {
-          video.muted = true;
+          v.muted = true;
           updateSound();
         });
       }
@@ -239,8 +292,8 @@
     });
     // back from a section the menu led to: the page as it was left; a video stopped halfway goes on
     window.addEventListener("pageshow", (event) => {
-      if (!event.persisted || !active || !video.paused || video.ended || intro.classList.contains("is-still")) return;
-      video.play().catch(showStill);
+      if (!event.persisted || !active || !cur.paused || cur.ended || intro.classList.contains("is-still")) return;
+      cur.play().catch(showStill);
     });
 
     if (root.classList.contains("intro-on")) {

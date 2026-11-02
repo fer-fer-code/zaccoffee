@@ -22,7 +22,7 @@
     if (show) r.classList.add("intro-on"); })(document);</script>
   <meta property="og:url" content="https://fer-fer-code.github.io/zaccoffee/">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"ZACCOFFEE","url":"https://fer-fer-code.github.io/zaccoffee/","logo":"https://fer-fer-code.github.io/zaccoffee/assets/img/logo-gold.webp","email":"info@zaccoffee.com","sameAs":["https://www.instagram.com/zaccoffee.ltd/","https://www.linkedin.com/company/zaccoffee/","https://www.tiktok.com/@zaccoffee.ltd"],"slogan":"From Our Soil to Your Soul."}</script>
-  <link rel="stylesheet" href="assets/css/main.css?v=20261102c">
+  <link rel="stylesheet" href="assets/css/main.css?v=20261102d">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="ZACCOFFEE">
   <meta property="og:title" content="ZACCOFFEE — From Our Soil to Your Soul">
@@ -31,10 +31,12 @@
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
-  <script src="assets/js/site.js?v=20261102c" defer></script>
-  <script src="assets/js/home.js?v=20261102c" defer></script>
+  <script src="assets/js/site.js?v=20261102d" defer></script>
+  <script src="assets/js/home.js?v=20261102d" defer></script>
 </head>
 <body class="home">
+  <!-- First the client's film, from the coffee tree to the cup (tools/build_film.sh, 68 s, its own music); when it
+       ends (or on "Skip intro") the logo video follows. -->
   <!-- The client's logo video (tools/build_intro_menu.sh), full screen before the main page: the logo, then its
        menu rises line by line, and the video stops on it. The menu lines are links laid over the picture, moving
        with it (#intro-track: where each line is, frame by frame); the logo opens the main page, like "Enter site".
@@ -45,13 +47,21 @@
        Firefox, Edge), HEVC (Safari), H.264 (older browsers). -->
   <div class="intro" id="intro" role="dialog" aria-modal="true" aria-label="ZACCOFFEE" data-mode="every">
     <div class="intro__frame">
+      <video class="intro__film" muted playsinline preload="none"
+             aria-hidden="true" tabindex="-1" disablepictureinpicture disableremoteplayback>
+        <source data-src="assets/video/film-portrait-hevc.mp4?v=20261102d" type='video/mp4; codecs="hvc1.2.4.L123.B0, mp4a.40.2"' media="(orientation: portrait)">
+        <source data-src="assets/video/film-portrait.mp4?v=20261102d" type='video/mp4; codecs="avc1.640029, mp4a.40.2"' media="(orientation: portrait)">
+        <source data-src="assets/video/film-av1.mp4?v=20261102d" type='video/mp4; codecs="av01.0.08M.10, mp4a.40.2"'>
+        <source data-src="assets/video/film-hevc.mp4?v=20261102d" type='video/mp4; codecs="hvc1.2.4.L123.B0, mp4a.40.2"'>
+        <source data-src="assets/video/film.mp4?v=20261102d" type='video/mp4; codecs="avc1.64001f, mp4a.40.2"'>
+      </video>
       <video class="intro__video" muted playsinline preload="none"
              aria-hidden="true" tabindex="-1" disablepictureinpicture disableremoteplayback>
-        <source data-src="assets/video/intro-portrait-hevc.mp4?v=20261102c" type='video/mp4; codecs="hvc1.2.4.L123.B0, mp4a.40.2"' media="(orientation: portrait)">
-        <source data-src="assets/video/intro-portrait.mp4?v=20261102c" type='video/mp4; codecs="avc1.640029, mp4a.40.2"' media="(orientation: portrait)">
-        <source data-src="assets/video/intro-av1.mp4?v=20261102c" type='video/mp4; codecs="av01.0.08M.10, mp4a.40.2"'>
-        <source data-src="assets/video/intro-hevc.mp4?v=20261102c" type='video/mp4; codecs="hvc1.2.4.L123.B0, mp4a.40.2"'>
-        <source data-src="assets/video/intro.mp4?v=20261102c" type='video/mp4; codecs="avc1.640028, mp4a.40.2"'>
+        <source data-src="assets/video/intro-portrait-hevc.mp4?v=20261102d" type='video/mp4; codecs="hvc1.2.4.L123.B0, mp4a.40.2"' media="(orientation: portrait)">
+        <source data-src="assets/video/intro-portrait.mp4?v=20261102d" type='video/mp4; codecs="avc1.640029, mp4a.40.2"' media="(orientation: portrait)">
+        <source data-src="assets/video/intro-av1.mp4?v=20261102d" type='video/mp4; codecs="av01.0.08M.10, mp4a.40.2"'>
+        <source data-src="assets/video/intro-hevc.mp4?v=20261102d" type='video/mp4; codecs="hvc1.2.4.L123.B0, mp4a.40.2"'>
+        <source data-src="assets/video/intro.mp4?v=20261102d" type='video/mp4; codecs="avc1.640028, mp4a.40.2"'>
       </video>
       <button class="intro__logo" type="button" data-track="logo" hidden><span class="visually-hidden">ZACCOFFEE: enter the site</span></button>
       <nav class="intro__menu" aria-label="Sections">
@@ -157,11 +167,11 @@
       <div class="container moments__grid">
         <div class="moment"><img class="moment__photo" src="assets/img/photos/baristas-poster-md.webp" srcset="assets/img/photos/baristas-poster-sm.webp 600w, assets/img/photos/baristas-poster-md.webp 1000w, assets/img/photos/baristas-poster-lg.webp 1600w" sizes="(min-width: 900px) 620px, 100vw" width="1000" height="971" alt="An illustrated ZACCOFFEE poster: three baristas behind the counter" decoding="async" loading="lazy"></div>
         <div class="moment">
-          <video class="moment__video" muted loop playsinline preload="none" poster="assets/img/cup-poster.jpg?v=20261102c"
+          <video class="moment__video" muted loop playsinline preload="none" poster="assets/img/cup-poster.jpg?v=20261102d"
                  width="1024" height="1248" aria-hidden="true" tabindex="-1" disablepictureinpicture disableremoteplayback>
-            <source data-src="assets/video/cup-av1.mp4?v=20261102c" type='video/mp4; codecs="av01.0.08M.10"'>
-            <source data-src="assets/video/cup-hevc.mp4?v=20261102c" type='video/mp4; codecs="hvc1.2.4.L123.B0"'>
-            <source data-src="assets/video/cup.mp4?v=20261102c" type='video/mp4; codecs="avc1.640028"'>
+            <source data-src="assets/video/cup-av1.mp4?v=20261102d" type='video/mp4; codecs="av01.0.08M.10"'>
+            <source data-src="assets/video/cup-hevc.mp4?v=20261102d" type='video/mp4; codecs="hvc1.2.4.L123.B0"'>
+            <source data-src="assets/video/cup.mp4?v=20261102d" type='video/mp4; codecs="avc1.640028"'>
           </video>
         </div>
       </div>
@@ -219,7 +229,7 @@
           <label class="form__field"><span class="form__label">First name <span class="form__optional">optional</span></span>
             <input type="text" name="first_name" autocomplete="given-name" maxlength="60"></label>
           <div class="form__trap" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
-          <input type="hidden" name="token" value="1793588617.72957cc1c7c7eaacb5dc8ed19d0225d93370d4dd59eca2555da34cdf79a8221e">
+          <input type="hidden" name="token" value="1793594227.ed79acbca8063f3ba9cc2d827e2fae7e1316248bdffc3132fe66575a9f00f0dc">
           <button class="btn btn--gold" type="submit">Notify me</button>
           <p class="form__note">We’ll only use your email to tell you about the launch. <a href="privacy/">Privacy</a></p>
           <p class="form__status" role="status" aria-live="polite"></p>
