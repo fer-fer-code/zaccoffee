@@ -896,6 +896,18 @@ html:has(> body.home) {
   animation: still-zoom 26s ease-out both;
 }
 
+/* a flat picture (the logo on white): whole and still, with straight edges, its white running to them */
+.split__media.split__media--flat {
+  background: #fafafa;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.split__media--flat .still {
+  object-fit: contain;
+  animation: none;
+}
+
 @keyframes still-zoom {
   from {
     transform: scale(1);
