@@ -22,7 +22,7 @@
     if (show) r.classList.add("intro-on"); })(document);</script>
   <meta property="og:url" content="https://fer-fer-code.github.io/zaccoffee/">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"ZACCOFFEE","url":"https://fer-fer-code.github.io/zaccoffee/","logo":"https://fer-fer-code.github.io/zaccoffee/assets/img/logo-gold.webp","email":"info@zaccoffee.com","sameAs":["https://www.instagram.com/zaccoffee.ltd/","https://www.linkedin.com/company/zaccoffee/","https://www.tiktok.com/@zaccoffee.ltd"],"slogan":"From Our Soil to Your Soul."}</script>
-  <link rel="stylesheet" href="assets/css/main.css?v=20261103c">
+  <link rel="stylesheet" href="assets/css/main.css?v=20261103d">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="ZACCOFFEE">
   <meta property="og:title" content="ZACCOFFEE — From Our Soil to Your Soul">
@@ -31,25 +31,37 @@
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
-  <script src="assets/js/site.js?v=20261103c" defer></script>
-  <script src="assets/js/home.js?v=20261103c" defer></script>
+  <script src="assets/js/site.js?v=20261103d" defer></script>
+  <script src="assets/js/home.js?v=20261103d" defer></script>
 </head>
 <body class="home">
-  <!-- The client's film, from the coffee tree to the cup (tools/build_film.sh, 68 s, its own music), full screen over
-       the start screen. Starts muted (browsers require it), "Sound on" and "Skip intro" are always visible; when it
-       ends it fades out over the start screen.
+  <!-- The intro, full screen over the start screen: the client's film, from the coffee tree to the cup
+       (tools/build_film.sh, 68 s, its own music), then straight on their logo video (tools/build_intro_menu.sh): out
+       of the film's dark end the light grey comes up, the logo settles and the menu rises line by line; its last
+       frame is the start screen, so when it ends the intro melts away and the home page is there, its menu clickable.
+       Starts muted (browsers require it), the sound carries on into the logo video; "Sound on" and "Skip intro"
+       (straight to the home page) are always visible.
        Nothing downloads until home.js decides to show it (the sources only have data-src). Each browser takes the
-       first file it can play: phones in portrait the 1080x1920 cut (HEVC for iPhone, else H.264); others AV1 (Chrome,
+       first file it can play: phones in portrait the 1080x1920 cuts (HEVC for iPhone, else H.264); others AV1 (Chrome,
        Firefox, Edge), HEVC (Safari), H.264 (older browsers). -->
-  <div class="intro" id="intro" role="dialog" aria-modal="true" aria-label="ZACCOFFEE film" data-mode="every">
+  <div class="intro is-film" id="intro" role="dialog" aria-modal="true" aria-label="ZACCOFFEE film" data-mode="every"
+       data-fps="24" data-fade="14">
     <div class="intro__frame">
       <video class="intro__film" muted playsinline preload="none"
              aria-hidden="true" tabindex="-1" disablepictureinpicture disableremoteplayback>
-        <source data-src="assets/video/film-portrait-hevc.mp4?v=20261103c" type='video/mp4; codecs="hvc1.2.4.L123.B0, mp4a.40.2"' media="(orientation: portrait)">
-        <source data-src="assets/video/film-portrait.mp4?v=20261103c" type='video/mp4; codecs="avc1.640029, mp4a.40.2"' media="(orientation: portrait)">
-        <source data-src="assets/video/film-av1.mp4?v=20261103c" type='video/mp4; codecs="av01.0.08M.10, mp4a.40.2"'>
-        <source data-src="assets/video/film-hevc.mp4?v=20261103c" type='video/mp4; codecs="hvc1.2.4.L123.B0, mp4a.40.2"'>
-        <source data-src="assets/video/film.mp4?v=20261103c" type='video/mp4; codecs="avc1.64001f, mp4a.40.2"'>
+        <source data-src="assets/video/film-portrait-hevc.mp4?v=20261103d" type='video/mp4; codecs="hvc1.2.4.L123.B0, mp4a.40.2"' media="(orientation: portrait)">
+        <source data-src="assets/video/film-portrait.mp4?v=20261103d" type='video/mp4; codecs="avc1.640029, mp4a.40.2"' media="(orientation: portrait)">
+        <source data-src="assets/video/film-av1.mp4?v=20261103d" type='video/mp4; codecs="av01.0.08M.10, mp4a.40.2"'>
+        <source data-src="assets/video/film-hevc.mp4?v=20261103d" type='video/mp4; codecs="hvc1.2.4.L123.B0, mp4a.40.2"'>
+        <source data-src="assets/video/film.mp4?v=20261103d" type='video/mp4; codecs="avc1.64001f, mp4a.40.2"'>
+      </video>
+      <video class="intro__video" muted playsinline preload="none"
+             aria-hidden="true" tabindex="-1" disablepictureinpicture disableremoteplayback>
+        <source data-src="assets/video/intro-portrait-hevc.mp4?v=20261103d" type='video/mp4; codecs="hvc1.2.4.L123.B0, mp4a.40.2"' media="(orientation: portrait)">
+        <source data-src="assets/video/intro-portrait.mp4?v=20261103d" type='video/mp4; codecs="avc1.640029, mp4a.40.2"' media="(orientation: portrait)">
+        <source data-src="assets/video/intro-av1.mp4?v=20261103d" type='video/mp4; codecs="av01.0.08M.10, mp4a.40.2"'>
+        <source data-src="assets/video/intro-hevc.mp4?v=20261103d" type='video/mp4; codecs="hvc1.2.4.L123.B0, mp4a.40.2"'>
+        <source data-src="assets/video/intro.mp4?v=20261103d" type='video/mp4; codecs="avc1.640028, mp4a.40.2"'>
       </video>
     </div>
     <div class="intro__ui">
@@ -68,8 +80,8 @@
       <h1 class="visually-hidden" id="start-title" tabindex="-1">ZACCOFFEE</h1>
       <div class="start__frame">
         <picture>
-          <source media="(orientation: portrait)" srcset="assets/img/intro-end-portrait.jpg?v=20261103c" width="1080" height="1920">
-          <img class="start__picture" src="assets/img/intro-end.jpg?v=20261103c" width="1920" height="1080" alt="" fetchpriority="high">
+          <source media="(orientation: portrait)" srcset="assets/img/intro-end-portrait.jpg?v=20261103d" width="1080" height="1920">
+          <img class="start__picture" src="assets/img/intro-end.jpg?v=20261103d" width="1920" height="1080" alt="" fetchpriority="high">
         </picture>
         <nav aria-label="Sections">
           <ul class="start__menu">

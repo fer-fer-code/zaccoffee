@@ -539,10 +539,13 @@ a {
 }
 
 /* ------------------------------------------------------------------ */
-/* Intro: the client's film, full screen, over the start screen       */
+/* Intro: the film, then the logo video, full screen, over the start  */
 /* ------------------------------------------------------------------ */
 
 .intro {
+  /* the logo video's light grey at its sides, top to bottom (tools/build_intro_menu.sh prints the stops; the start
+     screen, .start, has the same) */
+  --intro-light: linear-gradient(#ececec 3%, #f6f6f6 30%, #fafafa 55%, #fefefe 97%);
   display: none;
   position: fixed;
   inset: 0;
@@ -551,6 +554,19 @@ a {
   overflow: hidden;
   background: var(--espresso);
   color: var(--crema);
+}
+
+.intro[data-shape="tall"] {
+  --intro-light: linear-gradient(#f9f9f9 3%, #fdfdfd 30%, #fefefe 97%);
+}
+
+/* the logo video fades in from espresso to its light grey, and the screen round it with it (home.js sets --light) */
+.intro::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--intro-light);
+  opacity: var(--light, 0);
 }
 
 /* set before the first paint by the script in <head>; no page scrolling while the film plays */
@@ -568,8 +584,8 @@ a {
   transition: opacity 0.9s ease;
 }
 
-/* The film is never cropped (its logo fills almost the whole frame): the largest box of its shape that fits —
-   16:9, or 9:16 for the portrait cut phones get — its edges melting into the dark around it. */
+/* The videos are never cropped (the logo is their point): the largest box of their shape that fits — 16:9, or 9:16
+   for the portrait cuts phones get — their edges melting into the screen round them. */
 .intro__frame {
   position: absolute;
   top: 50%;
@@ -594,7 +610,7 @@ a {
     width: min(100cqw, 100cqh * 9 / 16);
   }
 
-  /* wider than the film: dark at the sides instead of top and bottom */
+  /* wider than the picture: the screen at the sides instead of top and bottom */
   @container (min-aspect-ratio: 16 / 9) {
     .intro__frame {
       -webkit-mask-image: linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%);
@@ -611,12 +627,19 @@ a {
 }
 
 /* the frame has the file's shape, so the picture fills it exactly */
-.intro__film {
+.intro__film,
+.intro__video {
   display: block;
   width: 100%;
   height: 100%;
   max-width: none;
   object-fit: fill;
+}
+
+/* first the film, then the logo video in its place */
+.intro.is-film .intro__video,
+.intro:not(.is-film) .intro__film {
+  display: none;
 }
 
 .intro__ui {
@@ -635,6 +658,22 @@ a {
     max(var(--gutter), env(safe-area-inset-left));
 }
 
+/* the buttons: light over the film, dark once the logo video's grey is round them */
+.intro.is-light .btn--ghost {
+  border-color: rgba(18, 13, 9, 0.28);
+  background: rgba(255, 255, 255, 0.45);
+  color: var(--espresso);
+}
+
+.intro.is-light .btn--ghost:hover {
+  border-color: var(--espresso);
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.intro.is-light :focus-visible {
+  outline-color: var(--cognac);
+}
+
 .intro__sound .icon-on,
 .intro__sound.is-on .icon-off {
   display: none;
@@ -648,7 +687,7 @@ a {
   margin-right: -4px;
 }
 
-/* a thin gold line along the bottom edge: how much of the film is left */
+/* a thin gold line along the bottom edge: how much of the video is left */
 .intro__bar {
   position: absolute;
   left: 0;
