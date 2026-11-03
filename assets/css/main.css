@@ -262,7 +262,7 @@ a {
   color: var(--gold);
 }
 
-/* over the film or in the photo viewer */
+/* over the film (dark on the light start screen: .start__film) */
 .btn--ghost {
   border-color: rgba(239, 228, 209, 0.32);
   background: rgba(18, 13, 9, 0.35);
@@ -301,7 +301,6 @@ a {
     width: 100%;
   }
 
-  .feature__body .btn,
   .form button[type="submit"] {
     width: 100%;
   }
@@ -540,12 +539,10 @@ a {
 }
 
 /* ------------------------------------------------------------------ */
-/* Intro: the client's logo video and its menu, before the main page  */
+/* Intro: the client's film, full screen, over the start screen       */
 /* ------------------------------------------------------------------ */
 
 .intro {
-  /* the video's light grey at its sides, top to bottom (tools/build_intro_menu.sh prints the stops) */
-  --intro-light: linear-gradient(#ececec 3%, #f6f6f6 30%, #fafafa 55%, #fefefe 97%);
   display: none;
   position: fixed;
   inset: 0;
@@ -556,20 +553,7 @@ a {
   color: var(--crema);
 }
 
-.intro[data-shape="tall"] {
-  --intro-light: linear-gradient(#f9f9f9 3%, #fdfdfd 30%, #fefefe 97%);
-}
-
-/* the video fades in from espresso to its light grey, and the screen around it with it (home.js sets --light) */
-.intro::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--intro-light);
-  opacity: var(--light, 0);
-}
-
-/* set before the first paint by the script in <head>; no page scrolling while the intro shows */
+/* set before the first paint by the script in <head>; no page scrolling while the film plays */
 .intro-on {
   overflow: hidden;
 }
@@ -584,8 +568,8 @@ a {
   transition: opacity 0.9s ease;
 }
 
-/* The picture is never cropped (the logo and the menu are its point): the largest box of its shape that fits —
-   16:9, or 9:16 for the portrait cut phones get — its edges melting into the same grey around it. */
+/* The film is never cropped (its logo fills almost the whole frame): the largest box of its shape that fits —
+   16:9, or 9:16 for the portrait cut phones get — its edges melting into the dark around it. */
 .intro__frame {
   position: absolute;
   top: 50%;
@@ -610,7 +594,7 @@ a {
     width: min(100cqw, 100cqh * 9 / 16);
   }
 
-  /* wider than the picture: grey at the sides instead of top and bottom */
+  /* wider than the film: dark at the sides instead of top and bottom */
   @container (min-aspect-ratio: 16 / 9) {
     .intro__frame {
       -webkit-mask-image: linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%);
@@ -627,92 +611,12 @@ a {
 }
 
 /* the frame has the file's shape, so the picture fills it exactly */
-.intro__video,
 .intro__film {
   display: block;
   width: 100%;
   height: 100%;
   max-width: none;
   object-fit: fill;
-}
-
-/* first the film, then the logo video in its place; the menu's links only with the logo video */
-.intro__film,
-.intro.is-film .intro__video,
-.intro.is-film [data-track] {
-  display: none;
-}
-
-.intro.is-film .intro__film {
-  display: block;
-}
-
-/* the browser won't play the video (e.g. iPhone in Low Power Mode): its last frame, the menu, as a picture.
-   ?v=1: hosts cache pictures for a month, so a new cut needs a new number here */
-.intro.is-still .intro__frame {
-  background: url("../img/intro-end.jpg?v=2") center / 100% 100% no-repeat;
-}
-
-.intro.is-still[data-shape="tall"] .intro__frame {
-  background-image: url("../img/intro-end-portrait.jpg?v=2");
-}
-
-.intro.is-still .intro__video {
-  visibility: hidden;
-}
-
-/* after the film: the start screen comes up out of the film's dark end */
-.intro.is-still .intro__frame,
-.intro.is-still::before {
-  animation: intro-in 0.8s ease-out;
-}
-
-@keyframes intro-in {
-  from {
-    opacity: 0;
-  }
-}
-
-/* The logo and the menu lines in the picture are links laid over them: home.js moves them with the video
-   (positions in parts of the picture, from tools/build_intro_menu.sh). */
-.intro__logo,
-.intro__link {
-  position: absolute;
-  padding: 0;
-  border: 0;
-  border-radius: 4px;
-  background: none;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.intro__logo {
-  border-radius: 50%;
-}
-
-/* pointing at a menu line, or reaching it with the keyboard: a cognac line draws under it */
-.intro__link::after {
-  content: "";
-  position: absolute;
-  left: 12%;
-  right: 12%;
-  bottom: 7%;
-  height: clamp(2px, 5%, 4px);
-  border-radius: 2px;
-  background: linear-gradient(90deg, transparent, var(--cognac) 22%, var(--cognac) 78%, transparent);
-  transform: scaleX(0);
-  transition: transform 0.35s var(--ease);
-}
-
-.intro__link:hover::after,
-.intro__link:focus-visible::after {
-  transform: scaleX(1);
-}
-
-.intro__logo:focus-visible,
-.intro__link:focus-visible {
-  outline: 2px solid var(--cognac);
-  outline-offset: 2px;
 }
 
 .intro__ui {
@@ -731,22 +635,6 @@ a {
     max(var(--gutter), env(safe-area-inset-left));
 }
 
-/* the buttons: light over the espresso at the start, dark once the video's grey is around them */
-.intro.is-light .btn--ghost {
-  border-color: rgba(18, 13, 9, 0.28);
-  background: rgba(255, 255, 255, 0.45);
-  color: var(--espresso);
-}
-
-.intro.is-light .btn--ghost:hover {
-  border-color: var(--espresso);
-  background: rgba(255, 255, 255, 0.75);
-}
-
-.intro.is-light :focus-visible {
-  outline-color: var(--cognac);
-}
-
 .intro__sound .icon-on,
 .intro__sound.is-on .icon-off {
   display: none;
@@ -756,16 +644,11 @@ a {
   display: block;
 }
 
-/* the video has stopped on its menu: no sound left to turn on */
-.intro.is-done .intro__sound {
-  visibility: hidden;
-}
-
 .intro__skip svg {
   margin-right: -4px;
 }
 
-/* a thin gold line along the bottom edge: how much of the video is left */
+/* a thin gold line along the bottom edge: how much of the film is left */
 .intro__bar {
   position: absolute;
   left: 0;
@@ -773,11 +656,6 @@ a {
   bottom: 0;
   height: 2px;
   background: rgba(226, 173, 110, 0.15);
-  transition: opacity 0.6s ease;
-}
-
-.intro.is-done .intro__bar {
-  opacity: 0;
 }
 
 .intro__bar span {
@@ -801,275 +679,165 @@ a {
 }
 
 /* ------------------------------------------------------------------ */
-/* Home, after the film (the layout follows Bacha Coffee's home page:  */
-/* the promise over a photo, centred section titles in spaced capitals, */
-/* a row of cards, the signature product in a panel)                   */
+/* Home: the client's start screen — the gold logo and its menu         */
 /* ------------------------------------------------------------------ */
 
-/* the first screen: the brand's promise over its photos, which sink into the ground at the bottom */
-.hero {
+/* the light grey of the client's picture all round, also where the page bounces past its ends; no film grain on it */
+html:has(> body.home) {
+  background: #fafafa;
+}
+
+.home {
+  background: #fafafa;
+  color: var(--espresso);
+}
+
+.home::after {
+  content: none;
+}
+
+/* One screen, nothing to scroll: the picture (the last frame of the client's logo video) as large as fits, never
+   cropped, its edges melting into the same grey around it — the grey of its sides, top to bottom
+   (tools/build_intro_menu.sh prints the stops). */
+.start {
   position: relative;
-  display: grid;
-  align-items: center;
-  min-height: calc(100vh - var(--head-h));
-  min-height: calc(100svh - var(--head-h));
-  isolation: isolate;
-}
-
-.hero__media {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
+  height: 100vh;
+  height: 100dvh;
+  container-type: size;
   overflow: hidden;
-  -webkit-mask-image: linear-gradient(to bottom, #000 66%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 66%, transparent 100%);
+  background: linear-gradient(#ececec 3%, #f6f6f6 30%, #fafafa 55%, #fefefe 97%);
 }
 
-/* the photos step back behind the words: darkest where the words are, so even the light and busy photos
-   (the cup on the white table, the green branch) don't show through the letters; the edges stay bright */
-.hero__media::after {
-  content: "";
+.start__frame {
   position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 64% 46% at 50% 50%, rgba(18, 13, 9, 0.8), rgba(18, 13, 9, 0.62) 55%, rgba(18, 13, 9, 0.34) 100%),
-    linear-gradient(to bottom, rgba(18, 13, 9, 0.5), rgba(18, 13, 9, 0) 34%);
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  transform: translate(-50%, -50%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 4%, #000 96%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 4%, #000 96%, transparent 100%);
 }
 
-.hero__inner {
-  display: grid;
-  justify-items: center;
-  gap: var(--s-5);
-  width: min(1040px, 100% - 2 * var(--gutter));
-  margin-inline: auto;
-  padding: var(--s-9) 0 var(--s-10);
-  text-align: center;
-}
-
-.hero__title {
-  margin: 0;
-  color: var(--crema);
-  font-family: var(--serif);
-  font-size: clamp(34px, 3.9vw + 12px, 70px);
-  font-weight: 600;
-  line-height: 1.1;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  text-wrap: balance;
-  /* a close shadow draws the edge of each letter, a wide one lifts the line off the photo */
-  text-shadow: 0 1px 2px rgba(18, 13, 9, 0.7), 0 2px 28px rgba(18, 13, 9, 0.75);
-}
-
-.hero__title:focus {
-  outline: none;
-}
-
-/* one sentence a line where there is room */
-.hero__line {
+.start__picture {
   display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
 }
 
-.hero__lead {
-  max-width: 32em;
-  margin: 0;
-  color: var(--crema);
-  font-size: clamp(17px, 0.35vw + 15.5px, 20px);
-  font-weight: 500;
-  line-height: 1.6;
-  text-wrap: balance;
-  text-shadow: 0 1px 2px rgba(18, 13, 9, 0.85), 0 1px 16px rgba(18, 13, 9, 0.85);
+/* phones held upright get the portrait picture (the <picture> in the page picks it the same way) */
+@media (orientation: portrait) {
+  .start {
+    background: linear-gradient(#f9f9f9 3%, #fdfdfd 30%, #fefefe 97%);
+  }
+
+  .start__frame {
+    aspect-ratio: 9 / 16;
+  }
 }
 
-.hero__actions {
-  justify-content: center;
-  margin-top: var(--s-3);
+@supports (width: 1cqh) {
+  .start__frame {
+    width: min(100cqw, 100cqh * 16 / 9);
+  }
+
+  /* wider than the picture: grey at the sides instead of top and bottom */
+  @container (min-aspect-ratio: 16 / 9) {
+    .start__frame {
+      -webkit-mask-image: linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%);
+      mask-image: linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%);
+    }
+  }
+
+  @media (orientation: portrait) {
+    .start__frame {
+      width: min(100cqw, 100cqh * 9 / 16);
+    }
+
+    @container (min-aspect-ratio: 9 / 16) {
+      .start__frame {
+        -webkit-mask-image: linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%);
+        mask-image: linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%);
+      }
+    }
+  }
 }
 
-/* section titles: centred, small spaced capitals in the gold of the logo */
-.section-head {
-  margin: 0 0 var(--s-7);
-  color: var(--gold);
-  font-family: var(--serif);
-  font-size: clamp(24px, 0.8vw + 18px, 31px);
-  font-weight: 600;
-  line-height: 1.25;
-  letter-spacing: 0.14em;
-  text-align: center;
-  text-transform: uppercase;
-  text-wrap: balance;
-}
-
-.eyebrow {
-  margin: 0;
-  color: var(--husk);
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 1.4;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-}
-
-/* the sections as a row of cards: five across on wide screens, a row to swipe on smaller ones */
-.explore {
-  padding: var(--s-8) 0 var(--s-9);
-}
-
-.cards {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: var(--s-5);
+/* The menu lines in the picture are links laid over them, where the page puts them (in parts of the picture,
+   from tools/build_intro_menu.sh): --l* for the landscape picture, --p* for the portrait one. */
+.start__menu {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.card a {
-  display: grid;
-  gap: var(--s-1);
-  text-decoration: none;
+.start__link {
+  position: absolute;
+  left: calc(var(--lx) * 100%);
+  top: calc(var(--ly) * 100%);
+  width: calc(var(--lw) * 100%);
+  height: calc(var(--lh) * 100%);
+  border-radius: 4px;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.card__frame {
-  display: block;
-  margin-bottom: var(--s-3);
-  overflow: hidden;
+@media (orientation: portrait) {
+  .start__link {
+    left: calc(var(--px) * 100%);
+    top: calc(var(--py) * 100%);
+    width: calc(var(--pw) * 100%);
+    height: calc(var(--ph) * 100%);
+  }
+}
+
+/* pointing at a menu line, or reaching it with the keyboard: a cognac line draws under it */
+.start__link::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 7%;
+  height: clamp(2px, 5%, 4px);
   border-radius: 2px;
-  background: var(--roast);
+  background: linear-gradient(90deg, transparent, var(--cognac) 22%, var(--cognac) 78%, transparent);
+  transform: scaleX(0);
+  transition: transform 0.35s var(--ease);
 }
 
-.card__photo {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 3 / 4;
-  object-fit: cover;
-  transition: transform 0.9s var(--ease);
+.start__link:hover::after,
+.start__link:focus-visible::after {
+  transform: scaleX(1);
 }
 
-.card__name {
-  color: var(--crema);
-  font-family: var(--serif);
-  font-size: clamp(24px, 0.5vw + 20px, 28px);
-  font-weight: 500;
-  line-height: 1.15;
-  transition: color 0.3s ease;
+.start__link:focus-visible {
+  outline: 2px solid var(--cognac);
+  outline-offset: 2px;
 }
 
-.card__note {
-  overflow: hidden;
-  color: var(--husk);
-  font-size: 14px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+/* the film again: a quiet button in the corner, dark on the light grey */
+.start__film {
+  position: absolute;
+  right: max(var(--gutter), env(safe-area-inset-right));
+  bottom: max(var(--s-5), env(safe-area-inset-bottom));
+  border-color: rgba(18, 13, 9, 0.28);
+  background: rgba(255, 255, 255, 0.45);
+  color: var(--espresso);
 }
 
-.card a:hover .card__photo,
-.card a:focus-visible .card__photo {
-  transform: scale(1.04);
+.start__film:hover {
+  border-color: var(--espresso);
+  background: rgba(255, 255, 255, 0.75);
 }
 
-.card a:hover .card__name,
-.card a:focus-visible .card__name {
-  color: var(--gold);
+.start__film:focus-visible {
+  outline-color: var(--cognac);
 }
 
-.card a:focus-visible {
-  outline-offset: 4px;
-}
-
-@media (max-width: 1099px) {
-  .cards {
-    grid-template-columns: none;
-    grid-auto-flow: column;
-    grid-auto-columns: min(72vw, 300px);
-    margin-inline: calc(-1 * var(--gutter));
-    padding: 0 var(--gutter) var(--s-3);
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    scroll-snap-type: x mandatory;
-    scroll-padding-inline: var(--gutter);
-    scrollbar-width: none;
-  }
-
-  .cards::-webkit-scrollbar {
-    display: none;
-  }
-
-  .card {
-    scroll-snap-align: start;
-  }
-}
-
-/* the signature product, as Bacha's "icon": picture and words in one raised panel */
-.feature {
-  padding: 0 0 var(--s-9);
-}
-
-.feature__grid {
-  display: grid;
-  gap: var(--s-6);
-  align-items: center;
-  padding: var(--s-4);
-  border: 1px solid var(--line);
-  border-radius: 3px;
-  background: var(--roast);
-}
-
-.feature__media {
-  overflow: hidden;
-  border-radius: 2px;
-}
-
-.feature__photo {
-  width: 100%;
-  height: auto;
-}
-
-.feature__body {
-  display: grid;
-  justify-items: start;
-  gap: var(--s-5);
-  padding: 0 var(--s-3) var(--s-5);
-}
-
-@media (min-width: 900px) {
-  .feature__grid {
-    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
-    gap: var(--s-8);
-    padding: var(--s-5);
-  }
-
-  .feature__body {
-    padding: 0 var(--s-6) 0 0;
-  }
-}
-
-/* two of the client's own pictures side by side, each whole: the columns follow their shapes
-   (the poster 1.03:1, the cup clip 0.82:1), so both end level */
-.moments {
-  padding: 0 0 var(--s-10);
-}
-
-.moments__grid {
-  display: grid;
-  gap: var(--s-5);
-}
-
-@media (min-width: 700px) {
-  .moments__grid {
-    grid-template-columns: minmax(0, 1.03fr) minmax(0, 0.82fr);
-  }
-}
-
-.moment {
-  overflow: hidden;
-  border-radius: 2px;
-  background: var(--roast);
-}
-
-.moment__photo,
-.moment__video {
-  width: 100%;
-  height: auto;
+.start__film svg {
+  width: 14px;
+  height: 14px;
+  margin-left: -4px;
 }
 
 /* ------------------------------------------------------------------ */
@@ -1115,7 +883,6 @@ a {
   }
 }
 
-.slide,
 .still {
   position: absolute;
   inset: 0;
@@ -1123,42 +890,6 @@ a {
   height: 100%;
   max-width: none;
   object-fit: cover;
-}
-
-/* photos: slow cross-fade, zoom in only (5 photos x 7 s) */
-.slide {
-  opacity: 0;
-  animation: slide 35s linear infinite both;
-  animation-delay: calc(var(--n, 0) * 7s);
-  animation-play-state: paused;
-  transition: opacity 0.6s ease;
-  will-change: opacity, transform;
-}
-
-.start-in .slide,
-html:not(.js) .slide {
-  animation-play-state: running;
-}
-
-@keyframes slide {
-  0% {
-    opacity: 0;
-    transform: scale(1);
-  }
-  4.3% {
-    opacity: 1;
-  }
-  20% {
-    opacity: 1;
-  }
-  24.3% {
-    opacity: 0;
-    transform: scale(1.12);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(1.12);
-  }
 }
 
 .still {
@@ -1178,8 +909,7 @@ html:not(.js) .slide {
 /* Inner pages                                                         */
 /* ------------------------------------------------------------------ */
 
-.page,
-.home {
+.page {
   padding-top: var(--head-h);
 }
 
@@ -1974,13 +1704,8 @@ html:not(.js) .slide {
     transition-delay: 0ms !important;
   }
 
-  /* photos stay still: show the first one */
-  .slide,
+  /* photos stay still */
   .still {
     animation: none !important;
-  }
-
-  .slide:first-child {
-    opacity: 1;
   }
 }

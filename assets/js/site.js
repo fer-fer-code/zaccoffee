@@ -5,17 +5,6 @@
   "use strict";
 
   const root = document.documentElement;
-  const head = document.querySelector(".site-head");
-  const hero = document.querySelector(".hero");
-
-  // Over the film the header is transparent; it turns solid once the film has scrolled away.
-  if (head && hero && "IntersectionObserver" in window) {
-    new IntersectionObserver(
-      ([entry]) => head.classList.toggle("is-solid", !entry.isIntersecting),
-      { rootMargin: `-${head.offsetHeight}px 0px 0px 0px` },
-    ).observe(hero);
-  }
-
   const menu = document.getElementById("menu");
   const menuBtn = document.querySelector(".site-head__menu");
   if (menu && menuBtn && typeof menu.showModal === "function") {
@@ -79,11 +68,10 @@
   });
 
   // Below the first screen, sections and photos rise gently into place as they scroll into view, once; the ones
-  // that come in together follow each other by a beat. The section cards come in as one row (on phones the row
-  // swipes sideways, so cards off to the right would otherwise wait). What is on screen when the page opens is
-  // never hidden, and nothing moves for people who turn motion off (or without this script).
+  // that come in together follow each other by a beat. What is on screen when the page opens is never hidden, and
+  // nothing moves for people who turn motion off (or without this script).
   const rising = document.querySelectorAll(
-    ".section-head, .cards > li, .feature, .moment, .gallery > li, .founder, .principles, .comments, .contact-list > div",
+    ".gallery > li, .founder, .principles, .comments, .contact-list > div",
   );
   if (rising.length && "IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
     const groups = new Map();              // what is watched -> what rises when it comes into view
@@ -101,12 +89,8 @@
     );
     rising.forEach((el) => {
       if (el.getBoundingClientRect().top < innerHeight) return;
-      const trigger = el.closest(".cards") || el;
-      if (!groups.has(trigger)) {
-        groups.set(trigger, []);
-        watch.observe(trigger);
-      }
-      groups.get(trigger).push(el);
+      groups.set(el, [el]);
+      watch.observe(el);
       el.classList.add("rise");
     });
   }
